@@ -3,8 +3,20 @@
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { ChevronLeft, Camera, Star, Search, ShoppingCart, Home as HomeIcon, Pencil } from "lucide-react"
-import type { Store } from "@/lib/data"
+import {
+  ChevronLeft,
+  Camera,
+  Star,
+  Search,
+  ShoppingCart,
+  Home as HomeIcon,
+  Pencil,
+  Recycle,
+  type LucideIcon,
+} from "lucide-react"
+import type { Store, FallbackIconKey } from "@/lib/data"
+
+const fallbackIcons: Record<FallbackIconKey, LucideIcon> = { recycle: Recycle }
 
 export function StoreScreen({ store }: { store: Store }) {
   const storageKey = `store-cover:${store.slug}`
@@ -43,7 +55,7 @@ export function StoreScreen({ store }: { store: Store }) {
     e.target.value = ""
   }
 
-  const FallbackIcon = store.fallbackIcon
+  const FallbackIcon = store.fallbackIcon ? fallbackIcons[store.fallbackIcon] : undefined
   // Priority: uploaded cover > preset cover; otherwise a brand-colored gradient.
   const presetCover = !cover && loaded ? store.defaultCover : undefined
   const showImage = cover ?? presetCover

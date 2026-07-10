@@ -1,7 +1,8 @@
-import { Recycle, type LucideIcon } from "lucide-react"
-
 const SVG_BASE = "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons"
 const brandLogo = (slug: string) => `${SVG_BASE}/${slug}/default.svg`
+
+/** String key for a fallback icon. Resolved to a Lucide component inside client components. */
+export type FallbackIconKey = "recycle"
 
 export type Product = {
   name: string
@@ -16,8 +17,8 @@ export type Store = {
   rating: string
   /** Remote brand logo URL. When null, a fallback icon is used. */
   logo: string | null
-  /** Fallback icon when there is no brand logo. */
-  fallbackIcon?: LucideIcon
+  /** Fallback icon key when there is no brand logo. */
+  fallbackIcon?: FallbackIconKey
   /** Optional preset cover image. When absent, a brand-colored gradient is used. */
   defaultCover?: string
   /** Two-stop gradient used for the cover and logo background. */
@@ -32,7 +33,7 @@ export const stores: Store[] = [
     tagline: "Produtos reciclados feitos à mão a partir de resíduos coletados",
     rating: "4.8",
     logo: null,
-    fallbackIcon: Recycle,
+    fallbackIcon: "recycle",
     defaultCover: "/loja/reverse-lab-cover.png",
     gradient: ["#1a2f6b", "#2c4694"],
     products: [
@@ -149,7 +150,7 @@ export function getStore(slug: string): Store | undefined {
 }
 
 /** Partners shown in the horizontal bar (every store except the built-in Reverse Lab shortcut). */
-export type Partner = { name: string; slug: string; logo: string | null; fallbackIcon?: LucideIcon }
+export type Partner = { name: string; slug: string; logo: string | null; fallbackIcon?: FallbackIconKey }
 
 export const partners: Partner[] = stores.map((s) => ({
   name: s.name,

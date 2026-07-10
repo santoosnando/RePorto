@@ -17,8 +17,11 @@ import {
   Heart,
   Home as HomeIcon,
   Star,
+  type LucideIcon,
 } from "lucide-react"
-import { partners } from "@/lib/data"
+import { partners, type FallbackIconKey } from "@/lib/data"
+
+const fallbackIcons: Record<FallbackIconKey, LucideIcon> = { recycle: Recycle }
 
 type View = "home" | "rewards"
 
@@ -39,12 +42,12 @@ export function HomeView() {
 function PartnerLogo({
   logo,
   name,
-  fallbackIcon: FallbackIcon,
+  fallbackIcon,
   className,
 }: {
   logo: string | null
   name: string
-  fallbackIcon?: (typeof partners)[number]["fallbackIcon"]
+  fallbackIcon?: FallbackIconKey
   className?: string
 }) {
   if (logo) {
@@ -52,6 +55,7 @@ function PartnerLogo({
     // eslint-disable-next-line @next/next/no-img-element
     return <img src={logo || "/placeholder.svg"} alt={`Logo ${name}`} className={className} />
   }
+  const FallbackIcon = fallbackIcon ? fallbackIcons[fallbackIcon] : undefined
   if (FallbackIcon) return <FallbackIcon className={className} />
   return null
 }
@@ -180,7 +184,7 @@ function RewardsScreen({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="relative h-full w-full">
-      <div className="h-full overflow-y-auto pb-[92px]">
+      <div className="h-full overflow-y-auto pb-[76px]">
         <div className="bg-gradient-to-b from-[#1a1f4d] via-[#2c4694] to-[#3b6fd8] px-[18px] pb-5 pt-14">
           <button type="button" onClick={onBack} className="flex items-center gap-3.5">
             <div className="flex size-9 flex-shrink-0 items-center justify-center rounded-full bg-brand-blue">
@@ -252,15 +256,15 @@ function RewardsScreen({ onBack }: { onBack: () => void }) {
         </div>
       </div>
 
-      {/* fixed bottom bar */}
-      <div className="absolute inset-x-0 bottom-0 flex justify-center bg-white pb-9 pt-3.5">
+      {/* fixed footer navbar */}
+      <div className="absolute inset-x-0 bottom-0 flex justify-center border-t border-border bg-white pb-3 pt-2">
         <button
           type="button"
           onClick={onBack}
-          className="flex size-[52px] items-center justify-center rounded-full border-4 border-[#d7e0f5] bg-brand-blue"
+          className="flex size-11 items-center justify-center rounded-full bg-brand-blue"
           aria-label="Início"
         >
-          <HomeIcon className="size-[22px] text-white" />
+          <HomeIcon className="size-5 text-white" />
         </button>
       </div>
     </div>
