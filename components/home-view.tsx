@@ -62,7 +62,7 @@ function PartnerLogo({
 
 function ProfileScreen({ onOpenRewards }: { onOpenRewards: () => void }) {
   return (
-    <div className="h-full w-full overflow-y-auto">
+    <div className="h-full w-full overflow-y-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {/* header */}
       <div className="flex items-center justify-between bg-white px-5 pt-[52px]">
         <span className="text-[19px] font-medium text-brand-navy">Meu perfil</span>
@@ -184,7 +184,7 @@ function RewardsScreen({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="relative h-full w-full">
-      <div className="h-full overflow-y-auto pb-[76px]">
+      <div className="h-full overflow-y-auto bg-[#4d82e0] pb-[76px] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <div className="bg-gradient-to-b from-[#1a1f4d] via-[#2c4694] to-[#3b6fd8] px-[18px] pb-5 pt-14">
           <button type="button" onClick={onBack} className="flex items-center gap-3.5">
             <div className="flex size-9 flex-shrink-0 items-center justify-center rounded-full bg-brand-blue">
@@ -207,8 +207,8 @@ function RewardsScreen({ onBack }: { onBack: () => void }) {
         </div>
 
         {/* partner shortcuts — horizontal scroll, tap to open the partner store */}
-        <div className="bg-gradient-to-b from-[#3b6fd8] to-[#3b6fd8] px-0 pt-4">
-          <div className="overflow-x-auto px-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="bg-[#3b6fd8] px-0 pt-4">
+          <div className="touch-pan-x overflow-x-auto overscroll-x-contain px-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <div className="flex w-max gap-4 pb-1">
               {partners.map((p) => (
                 <Link
