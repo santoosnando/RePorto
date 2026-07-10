@@ -36,6 +36,26 @@ export function HomeView() {
   )
 }
 
+function PartnerLogo({
+  logo,
+  name,
+  fallbackIcon: FallbackIcon,
+  className,
+}: {
+  logo: string | null
+  name: string
+  fallbackIcon?: (typeof partners)[number]["fallbackIcon"]
+  className?: string
+}) {
+  if (logo) {
+    // Remote brand SVG from theSVG.org
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={logo || "/placeholder.svg"} alt={`Logo ${name}`} className={className} />
+  }
+  if (FallbackIcon) return <FallbackIcon className={className} />
+  return null
+}
+
 function ProfileScreen({ onOpenRewards }: { onOpenRewards: () => void }) {
   return (
     <div className="h-full w-full overflow-y-auto">
@@ -125,12 +145,21 @@ function ProfileScreen({ onOpenRewards }: { onOpenRewards: () => void }) {
         <div className="overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div className="flex w-max animate-[scrollx_22s_linear_infinite]">
             {[...partners, ...partners].map((b, i) => (
-              <div key={i} className="flex min-w-[74px] flex-col items-center gap-1.5 px-[22px]">
+              <Link
+                key={i}
+                href={`/loja/${b.slug}`}
+                className="flex min-w-[74px] flex-col items-center gap-1.5 px-[22px]"
+              >
                 <div className="flex size-[46px] items-center justify-center rounded-full bg-brand-blue-soft">
-                  <b.icon className="size-5 text-brand-navy" />
+                  <PartnerLogo
+                    logo={b.logo}
+                    name={b.name}
+                    fallbackIcon={b.fallbackIcon}
+                    className="size-6 object-contain text-brand-navy"
+                  />
                 </div>
                 <span className="whitespace-nowrap text-[10.5px] text-brand-ink">{b.name}</span>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -150,53 +179,81 @@ function RewardsScreen({ onBack }: { onBack: () => void }) {
   ] as const
 
   return (
-    <div className="h-full w-full overflow-y-auto">
-      <div className="bg-gradient-to-b from-[#1a1f4d] via-[#2c4694] to-[#3b6fd8] px-[18px] pb-5 pt-14">
-        <button type="button" onClick={onBack} className="flex items-center gap-3.5">
-          <div className="flex size-9 flex-shrink-0 items-center justify-center rounded-full bg-brand-blue">
-            <ChevronLeft className="size-[18px] text-white" />
+    <div className="relative h-full w-full">
+      <div className="h-full overflow-y-auto pb-[92px]">
+        <div className="bg-gradient-to-b from-[#1a1f4d] via-[#2c4694] to-[#3b6fd8] px-[18px] pb-5 pt-14">
+          <button type="button" onClick={onBack} className="flex items-center gap-3.5">
+            <div className="flex size-9 flex-shrink-0 items-center justify-center rounded-full bg-brand-blue">
+              <ChevronLeft className="size-[18px] text-white" />
+            </div>
+            <span className="text-[19px] font-medium tracking-wide text-white">Recompensas</span>
+          </button>
+          <div className="mt-4 flex items-center gap-2.5">
+            <div className="flex flex-1 items-center gap-2 rounded-[22px] bg-white px-4 py-[11px] text-brand-mute">
+              <Search className="size-4" />
+              <span className="text-[13px]">O que procura?</span>
+            </div>
+            <div className="relative flex size-11 flex-shrink-0 items-center justify-center rounded-full bg-white">
+              <ShoppingCart className="size-[19px] text-brand-blue" />
+              <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-brand-blue text-[9px] text-white">
+                1
+              </span>
+            </div>
           </div>
-          <span className="text-[19px] font-medium tracking-wide text-white">Recompensas</span>
-        </button>
-        <div className="mt-4 flex items-center gap-2.5">
-          <div className="flex flex-1 items-center gap-2 rounded-[22px] bg-white px-4 py-[11px] text-brand-mute">
-            <Search className="size-4" />
-            <span className="text-[13px]">O que procura?</span>
+        </div>
+
+        {/* partner shortcuts — horizontal scroll, tap to open the partner store */}
+        <div className="bg-gradient-to-b from-[#3b6fd8] to-[#3b6fd8] px-0 pt-4">
+          <div className="overflow-x-auto px-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex w-max gap-4 pb-1">
+              {partners.map((p) => (
+                <Link
+                  key={p.slug}
+                  href={`/loja/${p.slug}`}
+                  className="flex w-[62px] flex-col items-center gap-1.5 transition-transform active:scale-95"
+                >
+                  <div className="flex size-14 items-center justify-center rounded-full bg-white shadow-sm">
+                    <PartnerLogo
+                      logo={p.logo}
+                      name={p.name}
+                      fallbackIcon={p.fallbackIcon}
+                      className="size-8 object-contain text-brand-navy"
+                    />
+                  </div>
+                  <span className="w-full truncate text-center text-[10px] text-white">{p.name}</span>
+                </Link>
+              ))}
+            </div>
           </div>
-          <div className="relative flex size-11 flex-shrink-0 items-center justify-center rounded-full bg-white">
-            <ShoppingCart className="size-[19px] text-brand-blue" />
-            <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-brand-blue text-[9px] text-white">
-              1
-            </span>
+        </div>
+
+        <div className="bg-gradient-to-b from-[#3b6fd8] to-[#4d82e0] px-4 pb-6 pt-4">
+          <div className="grid grid-cols-2 gap-3.5">
+            {categories.map((c) => {
+              const inner = (
+                <>
+                  <c.icon className="size-[46px] text-brand-blue" />
+                  <div className="mt-3 text-[13px] font-medium leading-tight text-brand-navy">{c.label}</div>
+                </>
+              )
+              const cls =
+                "flex flex-col items-center rounded-2xl bg-white px-2.5 pb-4 pt-6 text-center transition-transform active:scale-95"
+              return c.href ? (
+                <Link key={c.label} href={c.href} className={cls}>
+                  {inner}
+                </Link>
+              ) : (
+                <div key={c.label} className={cls}>
+                  {inner}
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>
 
-      <div className="bg-gradient-to-b from-[#2c4694] via-[#3b6fd8] to-[#4d82e0] px-4 pb-6 pt-[18px]">
-        <div className="grid grid-cols-2 gap-3.5">
-          {categories.map((c) => {
-            const inner = (
-              <>
-                <c.icon className="size-[46px] text-brand-blue" />
-                <div className="mt-3 text-[13px] font-medium leading-tight text-brand-navy">{c.label}</div>
-              </>
-            )
-            const cls =
-              "flex flex-col items-center rounded-2xl bg-white px-2.5 pb-4 pt-6 text-center transition-transform active:scale-95"
-            return c.href ? (
-              <Link key={c.label} href={c.href} className={cls}>
-                {inner}
-              </Link>
-            ) : (
-              <div key={c.label} className={cls}>
-                {inner}
-              </div>
-            )
-          })}
-        </div>
-      </div>
-
-      <div className="flex justify-center bg-white pb-9 pt-3.5">
+      {/* fixed bottom bar */}
+      <div className="absolute inset-x-0 bottom-0 flex justify-center bg-white pb-9 pt-3.5">
         <button
           type="button"
           onClick={onBack}

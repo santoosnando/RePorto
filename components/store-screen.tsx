@@ -3,25 +3,24 @@
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { ChevronLeft, Camera, Recycle, Star, Search, ShoppingCart, Home as HomeIcon, Pencil } from "lucide-react"
-import { reverseLabProducts } from "@/lib/data"
+import { ChevronLeft, Camera, Star, Search, ShoppingCart, Home as HomeIcon, Pencil } from "lucide-react"
+import type { Store } from "@/lib/data"
 
-const COVER_STORAGE_KEY = "reverse-lab-cover"
-
-export function StoreScreen() {
+export function StoreScreen({ store }: { store: Store }) {
+  const storageKey = `store-cover:${store.slug}`
   const [cover, setCover] = useState<string | null>(null)
   const [loaded, setLoaded] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(COVER_STORAGE_KEY)
+      const saved = localStorage.getItem(storageKey)
       if (saved) setCover(saved)
     } catch {
       // ignore
     }
     setLoaded(true)
-  }, [])
+  }, [storageKey])
 
   function handlePick() {
     fileInputRef.current?.click()
@@ -35,7 +34,7 @@ export function StoreScreen() {
       const result = reader.result as string
       setCover(result)
       try {
-        localStorage.setItem(COVER_STORAGE_KEY, result)
+        localStorage.setItem(storageKey, result)
       } catch {
         // storage may be full; keep in-memory preview
       }
@@ -44,22 +43,20 @@ export function StoreScreen() {
     e.target.value = ""
   }
 
+  const FallbackIcon = store.fallbackIcon
+  // Priority: uploaded cover > preset cover; otherwise a brand-colored gradient.
+  const presetCover = !cover && loaded ? store.defaultCover : undefined
+  const showImage = cover ?? presetCover
+
   return (
     <div className="h-full w-full overflow-y-auto bg-white">
       {/* cover */}
-      <div className="relative h-[170px] overflow-hidden bg-gradient-to-br from-[#5b6b7d] to-[#8a9aab]">
-        {cover ? (
-          <Image src={cover || "/placeholder.svg"} alt="Foto de capa da loja" fill className="object-cover" priority />
-        ) : (
-          loaded && (
-            <Image
-              src="/loja/reverse-lab-cover.png"
-              alt="Foto de capa da loja"
-              fill
-              className="object-cover"
-              priority
-            />
-          )
+      <div
+        className="relative h-[170px] overflow-hidden"
+        style={{ background: `linear-gradient(135deg, ${store.gradient[0]}, ${store.gradient[1]})` }}
+      >
+        {showImage && (
+          <Image src={showImage || "/placeholder.svg"} alt="Foto de capa da loja" fill className="object-cover" priority />
         )}
         <div className="absolute inset-0 bg-black/10" />
 
@@ -86,11 +83,22 @@ export function StoreScreen() {
 
       {/* store identity */}
       <div className="relative bg-white px-4 pb-2">
-        <div className="absolute -top-8 left-4 flex size-16 items-center justify-center rounded-2xl border-[3px] border-white bg-brand-navy">
-          <Recycle className="size-7 text-brand-green" />
+        <div className="absolute -top-8 left-4 flex size-16 items-center justify-center overflow-hidden rounded-2xl border-[3px] border-white bg-white shadow-sm">
+          {store.logo ? (
+            // Remote brand SVG from theSVG.org
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={store.logo || "/placeholder.svg"} alt={`Logo ${store.name}`} className="size-9 object-contain" />
+          ) : FallbackIcon ? (
+            <div
+              className="flex size-full items-center justify-center"
+              style={{ background: `linear-gradient(135deg, ${store.gradient[0]}, ${store.gradient[1]})` }}
+            >
+              <FallbackIcon className="size-7 text-brand-green" />
+            </div>
+          ) : null}
         </div>
         <div className="pt-[38px]">
-          <div className="text-[18px] font-medium text-brand-navy">Reverse Lab</div>
+          <div className="text-[18px] font-medium text-brand-navy">{store.name}</div>
           <div className="mt-1 flex items-center gap-2 text-[11px] text-brand-slate">
             <span className="flex items-center gap-1 text-[#0f9d58]">
               <span className="inline-block size-1.5 rounded-full bg-[#0f9d58]" />
@@ -99,12 +107,10 @@ export function StoreScreen() {
             <span>·</span>
             <span className="flex items-center gap-[3px]">
               <Star className="size-3 fill-[#f2a900] text-[#f2a900]" />
-              4.8
+              {store.rating}
             </span>
           </div>
-          <div className="mt-1 text-[11px] text-brand-mute">
-            Produtos reciclados feitos à mão a partir de resíduos coletados
-          </div>
+          <div className="mt-1 text-[11px] text-brand-mute">{store.tagline}</div>
         </div>
       </div>
 
@@ -119,7 +125,7 @@ export function StoreScreen() {
       {/* products */}
       <div className="bg-white px-4 pb-24">
         <div className="grid grid-cols-2 gap-3.5">
-          {reverseLabProducts.map((p) => (
+          {store.products.map((p) => (
             <div key={p.name} className="overflow-hidden rounded-2xl border border-border bg-[#f7f8fb]">
               <div className="relative h-[110px] w-full bg-[#e7eaf2]">
                 <Image src={p.image || "/placeholder.svg"} alt={p.name} fill className="object-cover" />
