@@ -176,47 +176,42 @@ function ProfileScreen({ onOpenRewards }: { onOpenRewards: () => void }) {
 
 function SponsorsFooter() {
   return (
-    <footer className="bg-white px-5 pb-8 pt-7">
-      {/* Financiado por / Promovido por */}
+    <footer className="bg-white px-5 pb-6 pt-5">
+      {/* Linha 1: Financiado por / Promovido por */}
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col items-center text-center">
-          <span className="text-[11px] font-semibold tracking-wide text-brand-navy">FINANCIADO POR</span>
+          <span className="text-[9px] font-semibold tracking-wide text-brand-navy">FINANCIADO POR</span>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/logos/federal-ministry.png"
             alt="Federal Ministry for the Environment, Climate Action, Nature Conservation and Nuclear Safety"
-            className="mt-3 h-16 w-auto object-contain"
+            className="mt-2 h-9 w-auto object-contain"
           />
         </div>
         <div className="flex flex-col items-center text-center">
-          <span className="text-[11px] font-semibold tracking-wide text-brand-navy">PROMOVIDO POR</span>
+          <span className="text-[9px] font-semibold tracking-wide text-brand-navy">PROMOVIDO POR</span>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/logos/zug.jpg"
             alt="Zukunft Umwelt Gesellschaft (ZUG)"
-            className="mt-3 h-14 w-auto object-contain"
+            className="mt-2 h-8 w-auto object-contain"
           />
         </div>
       </div>
 
-      {/* Implementado por */}
-      <div className="mt-9 flex flex-col items-center text-center">
-        <span className="text-[11px] font-semibold tracking-wide text-brand-navy">IMPLEMENTADO POR</span>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/logos/blackforest.png"
-          alt="Blackforest Solutions"
-          className="mt-4 h-20 w-auto object-contain"
-        />
-      </div>
-
-      <div className="mt-7 grid grid-cols-3 items-center gap-3">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logos/alta.png" alt="ALTA Geotecnia Ambiental" className="h-9 w-auto object-contain" />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logos/fraunhofer.jpg" alt="Fraunhofer ICT" className="h-9 w-auto object-contain" />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logos/seecon.png" alt="seecon" className="h-6 w-auto object-contain" />
+      {/* Linha 2: Implementado por */}
+      <div className="mt-5 flex flex-col items-center text-center">
+        <span className="text-[9px] font-semibold tracking-wide text-brand-navy">IMPLEMENTADO POR</span>
+        <div className="mt-2 flex w-full items-center justify-center gap-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logos/blackforest.png" alt="Blackforest Solutions" className="h-8 w-auto object-contain" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logos/alta.png" alt="ALTA Geotecnia Ambiental" className="h-6 w-auto object-contain" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logos/fraunhofer.jpg" alt="Fraunhofer ICT" className="h-5 w-auto object-contain" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logos/seecon.png" alt="seecon" className="h-4 w-auto object-contain" />
+        </div>
       </div>
     </footer>
   )
