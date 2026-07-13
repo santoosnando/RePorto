@@ -168,6 +168,8 @@ function ProfileScreen({ onOpenRewards }: { onOpenRewards: () => void }) {
           </div>
         </div>
       </div>
+
+      <SponsorsFooter />
     </div>
   )
 }
@@ -302,8 +304,6 @@ function RewardsScreen({ onBack }: { onBack: () => void }) {
             })}
           </div>
         </div>
-
-        <SponsorsFooter />
       </div>
 
       {/* fixed footer navbar */}
