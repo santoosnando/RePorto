@@ -181,21 +181,25 @@ function SponsorsFooter() {
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col items-center text-center">
           <span className="text-[9px] font-semibold tracking-wide text-brand-navy">FINANCIADO POR</span>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logos/federal-ministry.png"
-            alt="Federal Ministry for the Environment, Climate Action, Nature Conservation and Nuclear Safety"
-            className="mt-2 h-11 w-auto object-contain"
-          />
+          <div className="mt-2 flex h-14 items-center justify-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logos/federal-ministry.png"
+              alt="Federal Ministry for the Environment, Climate Action, Nature Conservation and Nuclear Safety"
+              className="h-14 w-auto object-contain"
+            />
+          </div>
         </div>
         <div className="flex flex-col items-center text-center">
           <span className="text-[9px] font-semibold tracking-wide text-brand-navy">PROMOVIDO POR</span>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logos/zug.jpg"
-            alt="Zukunft Umwelt Gesellschaft (ZUG)"
-            className="mt-2 h-10 w-auto object-contain"
-          />
+          <div className="mt-2 flex h-14 items-center justify-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logos/zug.jpg"
+              alt="Zukunft Umwelt Gesellschaft (ZUG)"
+              className="h-10 w-auto object-contain"
+            />
+          </div>
         </div>
       </div>
 
