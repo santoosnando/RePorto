@@ -185,7 +185,7 @@ function SponsorsFooter() {
           <img
             src="/logos/federal-ministry.png"
             alt="Federal Ministry for the Environment, Climate Action, Nature Conservation and Nuclear Safety"
-            className="mt-2 h-9 w-auto object-contain"
+            className="mt-2 h-11 w-auto object-contain"
           />
         </div>
         <div className="flex flex-col items-center text-center">
@@ -194,23 +194,27 @@ function SponsorsFooter() {
           <img
             src="/logos/zug.jpg"
             alt="Zukunft Umwelt Gesellschaft (ZUG)"
-            className="mt-2 h-8 w-auto object-contain"
+            className="mt-2 h-10 w-auto object-contain"
           />
         </div>
       </div>
 
-      {/* Linha 2: Implementado por */}
+      {/* Linha 2: Implementado por (BlackForest em destaque) */}
       <div className="mt-5 flex flex-col items-center text-center">
         <span className="text-[9px] font-semibold tracking-wide text-brand-navy">IMPLEMENTADO POR</span>
-        <div className="mt-2 flex w-full items-center justify-center gap-3">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/logos/blackforest.png"
+          alt="Blackforest Solutions"
+          className="mt-2.5 h-14 w-auto object-contain"
+        />
+        <div className="mt-3 flex w-full items-center justify-center gap-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logos/blackforest.png" alt="Blackforest Solutions" className="h-8 w-auto object-contain" />
+          <img src="/logos/alta.png" alt="ALTA Geotecnia Ambiental" className="h-5 w-auto object-contain" />
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logos/alta.png" alt="ALTA Geotecnia Ambiental" className="h-6 w-auto object-contain" />
+          <img src="/logos/fraunhofer.jpg" alt="Fraunhofer ICT" className="h-4 w-auto object-contain" />
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logos/fraunhofer.jpg" alt="Fraunhofer ICT" className="h-5 w-auto object-contain" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logos/seecon.png" alt="seecon" className="h-4 w-auto object-contain" />
+          <img src="/logos/seecon.png" alt="seecon" className="h-3.5 w-auto object-contain" />
         </div>
       </div>
     </footer>
