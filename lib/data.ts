@@ -8,7 +8,20 @@ export type Product = {
   name: string
   image: string
   price: string
+  /** Optional product description shown in the product modal. */
+  description?: string
+  /** Optional available quantity shown in the product modal. */
+  stock?: number
 }
+
+/** Extracts the numeric points value from a price label like "180 pts". */
+export function parsePoints(price: string): number {
+  const match = price.match(/\d+/)
+  return match ? Number.parseInt(match[0], 10) : 0
+}
+
+/** Static demo balance shown across the app (no backend). */
+export const USER_BALANCE = 693
 
 export type Store = {
   slug: string
@@ -37,12 +50,48 @@ export const stores: Store[] = [
     defaultCover: "/loja/reverse-lab-cover.png",
     gradient: ["#1a2f6b", "#2c4694"],
     products: [
-      { name: "Abridor", image: "/loja/reverse-lab/abridor.png", price: "120 pts" },
-      { name: "Mosquetão", image: "/loja/reverse-lab/mosquetao.png", price: "180 pts" },
-      { name: "Pente", image: "/loja/reverse-lab/pente.png", price: "150 pts" },
-      { name: "Porta celular", image: "/loja/reverse-lab/porta-celular.png", price: "260 pts" },
-      { name: "Selos decorativos", image: "/loja/reverse-lab/selos.png", price: "90 pts" },
-      { name: "Relógio de parede", image: "/loja/reverse-lab/relogio.png", price: "400 pts" },
+      {
+        name: "Abridor",
+        image: "/loja/reverse-lab/abridor.png",
+        price: "120 pts",
+        stock: 12,
+        description: "Abridor de garrafas produzido a partir de plástico reciclado, resistente e durável.",
+      },
+      {
+        name: "Mosquetão",
+        image: "/loja/reverse-lab/mosquetao.png",
+        price: "180 pts",
+        stock: 9,
+        description: "Mosquetão produzido a partir de plástico reciclado, resistente e multifuncional.",
+      },
+      {
+        name: "Pente",
+        image: "/loja/reverse-lab/pente.png",
+        price: "150 pts",
+        stock: 15,
+        description: "Pente produzido a partir de plástico reciclado, leve e antiestático.",
+      },
+      {
+        name: "Porta celular",
+        image: "/loja/reverse-lab/porta-celular.png",
+        price: "260 pts",
+        stock: 7,
+        description: "Porta celular produzido a partir de plástico reciclado, prático e sustentável.",
+      },
+      {
+        name: "Selos decorativos",
+        image: "/loja/reverse-lab/selos.png",
+        price: "90 pts",
+        stock: 20,
+        description: "Selos decorativos produzidos a partir de plástico reciclado para personalizar seus objetos.",
+      },
+      {
+        name: "Relógio de parede",
+        image: "/loja/reverse-lab/relogio.png",
+        price: "400 pts",
+        stock: 4,
+        description: "Relógio de parede produzido a partir de plástico reciclado, com design único e artesanal.",
+      },
     ],
   },
   {

@@ -12,9 +12,14 @@ import {
   Home as HomeIcon,
   Pencil,
   Recycle,
+  CheckCircle2,
+  X,
   type LucideIcon,
 } from "lucide-react"
-import type { Store, FallbackIconKey } from "@/lib/data"
+import type { Store, FallbackIconKey, Product } from "@/lib/data"
+import { parsePoints } from "@/lib/data"
+import { useCart } from "@/components/cart-context"
+import { ProductModal } from "@/components/product-modal"
 
 const fallbackIcons: Record<FallbackIconKey, LucideIcon> = { recycle: Recycle }
 
@@ -23,6 +28,34 @@ export function StoreScreen({ store }: { store: Store }) {
   const [cover, setCover] = useState<string | null>(null)
   const [loaded, setLoaded] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const cart = useCart()
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [showToast, setShowToast] = useState(false)
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (toastTimer.current) clearTimeout(toastTimer.current)
+    }
+  }, [])
+
+  function handleAddToCart(product: Product) {
+    cart.addItem({
+      storeSlug: store.slug,
+      storeName: store.name,
+      name: product.name,
+      image: product.image,
+      priceLabel: product.price,
+      points: parsePoints(product.price),
+      description:
+        product.description ?? `${product.name} disponível para resgate com os seus pontos acumulados.`,
+    })
+    setSelectedProduct(null)
+    setShowToast(true)
+    if (toastTimer.current) clearTimeout(toastTimer.current)
+    toastTimer.current = setTimeout(() => setShowToast(false), 3000)
+  }
 
   useEffect(() => {
     try {
@@ -138,7 +171,12 @@ export function StoreScreen({ store }: { store: Store }) {
       <div className="bg-white px-4 pb-24">
         <div className="grid grid-cols-2 gap-3.5">
           {store.products.map((p) => (
-            <div key={p.name} className="overflow-hidden rounded-2xl border border-border bg-[#f7f8fb]">
+            <button
+              key={p.name}
+              type="button"
+              onClick={() => setSelectedProduct(p)}
+              className="overflow-hidden rounded-2xl border border-border bg-[#f7f8fb] text-left transition-transform active:scale-95"
+            >
               <div className="relative h-[110px] w-full bg-[#e7eaf2]">
                 <Image src={p.image || "/placeholder.svg"} alt={p.name} fill className="object-cover" />
               </div>
@@ -146,7 +184,7 @@ export function StoreScreen({ store }: { store: Store }) {
                 <span className="text-[12.5px] font-medium text-brand-navy">{p.name}</span>
                 <span className="text-[11px] font-medium text-brand-blue">{p.price}</span>
               </div>
-            </div>
+            </button>
           ))}
         </div>
       </div>
@@ -160,17 +198,50 @@ export function StoreScreen({ store }: { store: Store }) {
         >
           <HomeIcon className="size-[22px] text-white" />
         </Link>
-        <button
-          type="button"
+        <Link
+          href="/carrinho"
           className="pointer-events-auto relative flex size-[52px] items-center justify-center rounded-full border-4 border-[#d7e0f5] bg-white"
           aria-label="Carrinho"
         >
           <ShoppingCart className="size-[20px] text-brand-blue" />
-          <span className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-brand-blue text-[10px] text-white">
-            1
-          </span>
-        </button>
+          {cart.count > 0 && (
+            <span className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-brand-blue text-[10px] text-white">
+              {cart.count}
+            </span>
+          )}
+        </Link>
       </div>
+
+      {/* success toast */}
+      {showToast && (
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-40 px-4 pt-[52px]">
+          <div className="pointer-events-auto flex items-start gap-3 rounded-xl border-l-4 border-brand-emerald bg-white px-4 py-3 shadow-lg">
+            <CheckCircle2 className="mt-0.5 size-5 flex-shrink-0 text-brand-emerald" />
+            <div className="flex-1">
+              <div className="text-[14px] font-semibold text-brand-emerald">Sucesso</div>
+              <div className="text-[13px] text-brand-slate">Produto adicionado ao carrinho.</div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowToast(false)}
+              aria-label="Fechar aviso"
+              className="text-brand-emerald"
+            >
+              <X className="size-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* product detail modal */}
+      {selectedProduct && (
+        <ProductModal
+          product={selectedProduct}
+          store={store}
+          onClose={() => setSelectedProduct(null)}
+          onAdd={() => handleAddToCart(selectedProduct)}
+        />
+      )}
     </div>
   )
 }
