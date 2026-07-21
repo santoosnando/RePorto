@@ -20,6 +20,7 @@ import {
   type LucideIcon,
 } from "lucide-react"
 import { partners, type FallbackIconKey } from "@/lib/data"
+import { useCart } from "@/components/cart-context"
 
 const fallbackIcons: Record<FallbackIconKey, LucideIcon> = { recycle: Recycle }
 
@@ -226,6 +227,7 @@ function SponsorsFooter() {
 }
 
 function RewardsScreen({ onBack }: { onBack: () => void }) {
+  const cart = useCart()
   const categories = [
     { label: "Alimentação e bebidas", icon: UtensilsCrossed, href: null },
     { label: "Mercado", icon: ShoppingBag, href: null },
@@ -250,12 +252,18 @@ function RewardsScreen({ onBack }: { onBack: () => void }) {
               <Search className="size-4" />
               <span className="text-[13px]">O que procura?</span>
             </div>
-            <div className="relative flex size-11 flex-shrink-0 items-center justify-center rounded-full bg-white">
+            <Link
+              href="/carrinho"
+              className="relative flex size-11 flex-shrink-0 items-center justify-center rounded-full bg-white"
+              aria-label="Carrinho"
+            >
               <ShoppingCart className="size-[19px] text-brand-blue" />
-              <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-brand-blue text-[9px] text-white">
-                1
-              </span>
-            </div>
+              {cart.count > 0 && (
+                <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-brand-blue text-[9px] text-white">
+                  {cart.count}
+                </span>
+              )}
+            </Link>
           </div>
         </div>
 
