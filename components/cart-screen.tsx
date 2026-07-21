@@ -82,7 +82,7 @@ export function CartScreen() {
                           type="button"
                           onClick={() => cart.removeItem(item.id)}
                           aria-label={`Remover ${item.name}`}
-                          className="flex-shrink-0 text-brand-coral"
+                          className="flex-shrink-0 text-[#f4544f]"
                         >
                           <Trash2 className="size-[18px]" />
                         </button>
@@ -120,7 +120,7 @@ export function CartScreen() {
               <button
                 type="button"
                 onClick={() => setConfirmOpen(true)}
-                className="mx-auto mt-8 block w-[70%] rounded-xl bg-brand-emerald py-3.5 text-center text-[16px] font-bold text-white transition-colors hover:brightness-95 active:scale-[0.99]"
+                className="mx-auto mt-8 block w-[70%] rounded-xl bg-[#1f9d3f] py-3.5 text-center text-[16px] font-bold text-white transition-colors hover:brightness-95 active:scale-[0.99]"
               >
                 Confirmar compra!
               </button>
@@ -161,7 +161,7 @@ export function CartScreen() {
               <button
                 type="button"
                 onClick={() => setConfirmOpen(false)}
-                className="flex items-center gap-1.5 px-3 py-2 text-[15px] font-bold text-brand-coral"
+                className="flex items-center gap-1.5 px-3 py-2 text-[15px] font-bold text-[#f4544f]"
               >
                 <X className="size-4" />
                 Não
