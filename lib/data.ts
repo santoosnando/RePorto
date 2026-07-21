@@ -21,7 +21,7 @@ export function parsePoints(price: string): number {
 }
 
 /** Static demo balance shown across the app (no backend). */
-export const USER_BALANCE = 693
+export const USER_BALANCE = 10000
 
 export type Store = {
   slug: string

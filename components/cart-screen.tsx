@@ -107,7 +107,9 @@ export function CartScreen() {
               <div className="flex items-end justify-between px-1">
                 <div>
                   <div className="text-[15px] font-semibold text-white">Saldo</div>
-                  <div className="text-[15px] font-semibold italic text-white">{USER_BALANCE} pontos</div>
+                  <div className="text-[15px] font-semibold italic text-white">
+                    {USER_BALANCE.toLocaleString("pt-BR")} pontos
+                  </div>
                 </div>
                 <div className="text-right">
                   <div className="text-[20px] font-bold text-white">Total</div>
