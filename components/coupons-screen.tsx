@@ -84,31 +84,36 @@ export function CouponsScreen({ onBack }: { onBack: () => void }) {
 
 function CouponCard({ coupon, used }: { coupon: Coupon; used: boolean }) {
   return (
-    <li className={`flex gap-3 rounded-2xl bg-white p-3 ${used ? "opacity-90" : ""}`}>
-      <div className="relative size-[70px] flex-shrink-0 overflow-hidden rounded-xl bg-[#e7eaf2]">
+    <li className="flex items-center gap-3 rounded-2xl bg-white p-3">
+      <div className="relative size-[64px] flex-shrink-0 overflow-hidden rounded-xl bg-[#e7eaf2]">
         <Image src={coupon.image || "/placeholder.svg"} alt={coupon.name} fill className="object-cover" />
       </div>
-      <div className="flex min-w-0 flex-1 flex-col">
-        <span className="text-[15px] font-semibold text-brand-navy">{coupon.name}</span>
-        <span className="mt-0.5 inline-flex w-fit items-center rounded-full bg-brand-blue-soft px-2 py-0.5 text-[10px] font-medium text-brand-blue">
-          {coupon.storeName}
-        </span>
 
-        {used ? (
-          <span className="mt-auto inline-flex w-fit items-center gap-1 rounded-full bg-[#e8f6ec] px-2 py-1 text-[10.5px] font-medium text-brand-emerald">
-            <CheckCircle2 className="size-3" />
-            Utilizado em {coupon.usedAt}
-          </span>
-        ) : (
-          <div className="mt-auto flex items-center justify-between pt-1">
-            <span className="inline-flex items-center gap-1 text-[10.5px] text-brand-mute">
+      <div className="min-w-0 flex-1">
+        <div className="text-[15px] font-bold text-brand-ink">{coupon.name}</div>
+        <p className="mt-0.5 line-clamp-2 text-[12px] leading-snug text-brand-slate">{coupon.description}</p>
+        <div className="mt-1 flex items-center gap-1 text-[10.5px] text-brand-mute">
+          {used ? (
+            <>
+              <CheckCircle2 className="size-3" />
+              Utilizado em {coupon.usedAt}
+            </>
+          ) : (
+            <>
               <CalendarClock className="size-3" />
               Válido até {coupon.validUntil}
-            </span>
-            <span className="text-[13px] font-bold text-brand-blue">{coupon.points} pts</span>
-          </div>
-        )}
+            </>
+          )}
+        </div>
       </div>
+
+      <span
+        className={`flex-shrink-0 rounded-lg px-3 py-1.5 text-[12px] font-semibold ${
+          used ? "bg-[#eef1f6] text-brand-mute" : "bg-brand-emerald text-white"
+        }`}
+      >
+        {used ? "Usado" : "Ativo"}
+      </span>
     </li>
   )
 }

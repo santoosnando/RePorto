@@ -27,9 +27,17 @@ export const USER_BALANCE = 1902
 export const USER = {
   name: "Fernando Santos",
   avatar: "/avatar-fernando.png",
-  level: "Vizinho consciente",
-  nextLevel: "Mobilizador do bairro",
+  level: "Vizinho Consciente",
+  nextLevel: "Mobilizador do Bairro",
   balance: USER_BALANCE,
+  /** Level badge illustrations (generated images, transparent background). */
+  levelBadge: "/badges/vizinho-consciente.png",
+  nextLevelBadge: "/badges/mobilizador-bairro.png",
+  /** Date the user joined, shown at the bottom of the profile screen. */
+  joinDate: "21 de julho",
+  /** Level progress (integer points toward the next level). */
+  levelPoints: 640,
+  levelTarget: 1000,
   /** Points threshold to reach the next level (integer, no decimals). */
   nextLevelAt: 3000,
 }
@@ -40,6 +48,9 @@ export const POINTS_TO_NEXT = Math.max(0, Math.round(USER.nextLevelAt - USER.bal
 /** Progress percentage toward the next level, rounded to an integer. */
 export const LEVEL_PROGRESS = Math.min(100, Math.round((USER.balance / USER.nextLevelAt) * 100))
 
+/** Level-badge progress shown on the profile screen (integer, no decimals). */
+export const LEVEL_BADGE_PROGRESS = Math.min(100, Math.round((USER.levelPoints / USER.levelTarget) * 100))
+
 export type Coupon = {
   id: string
   name: string
@@ -47,6 +58,8 @@ export type Coupon = {
   storeSlug: string
   image: string
   points: number
+  /** Short description shown under the coupon name. */
+  description: string
   /** Expiry date for available coupons. */
   validUntil?: string
   /** Date the coupon was used (only for history). */
@@ -62,6 +75,7 @@ export const AVAILABLE_COUPONS: Coupon[] = [
     storeSlug: "ifood",
     image: "/loja/ifood/2.png",
     points: 450,
+    description: "Combo completo com lanche, bebida e acompanhamento em pedidos selecionados.",
     validUntil: "30/08/2026",
   },
   {
@@ -71,6 +85,7 @@ export const AVAILABLE_COUPONS: Coupon[] = [
     storeSlug: "starbucks",
     image: "/loja/starbucks/1.png",
     points: 300,
+    description: "Um Caffè Latte quente ou gelado para resgatar na loja participante.",
     validUntil: "15/09/2026",
   },
   {
@@ -80,6 +95,7 @@ export const AVAILABLE_COUPONS: Coupon[] = [
     storeSlug: "carrefour",
     image: "/loja/carrefour/4.png",
     points: 150,
+    description: "Sacola retornável de tecido reciclado para as suas compras do dia a dia.",
     validUntil: "10/09/2026",
   },
 ]
@@ -93,6 +109,7 @@ export const USED_COUPONS: Coupon[] = [
     storeSlug: "uber",
     image: "/loja/uber/2.png",
     points: 250,
+    description: "Cupom de 30% de desconto aplicado em uma corrida urbana.",
     usedAt: "02/07/2026",
   },
   {
@@ -102,6 +119,7 @@ export const USED_COUPONS: Coupon[] = [
     storeSlug: "nike",
     image: "/loja/nike/2.png",
     points: 600,
+    description: "Camiseta esportiva com tecnologia Dri-FIT resgatada na loja.",
     usedAt: "18/06/2026",
   },
   {
@@ -111,6 +129,7 @@ export const USED_COUPONS: Coupon[] = [
     storeSlug: "reverse-lab",
     image: "/loja/reverse-lab/pente.png",
     points: 150,
+    description: "Pente produzido a partir de plástico reciclado coletado no bairro.",
     usedAt: "29/05/2026",
   },
 ]

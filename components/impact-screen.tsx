@@ -2,28 +2,35 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image"
-import { ChevronLeft, Home as HomeIcon, Recycle, Leaf, Droplets, Zap, Package, Wind } from "lucide-react"
+import { ChevronLeft, Home as HomeIcon, Leaf, Target, CheckCircle2 } from "lucide-react"
 import { USER } from "@/lib/data"
 import { EcoPhraseRotator } from "@/components/eco-phrase-rotator"
 
-type Impact = {
-  totalKg: number
-  deliveries: number
-  pointsEarned: number
-  co2Kg: number
-  materials: { label: string; kg: number; color: string }[]
+type Tab = "mes" | "ranking" | "metas"
+
+type ImpactData = {
+  co2: number
+  months: { label: string; value: number }[]
+  ranking: { name: string; value: number; me?: boolean }[]
 }
 
-const BASE_IMPACT: Impact = {
-  totalKg: 68,
-  deliveries: 24,
-  pointsEarned: 4820,
-  co2Kg: 41,
-  materials: [
-    { label: "Plástico", kg: 24, color: "#3b5fd8" },
-    { label: "Vidro", kg: 17, color: "#1f9d3f" },
-    { label: "Papel", kg: 15, color: "#f2a900" },
-    { label: "Metal", kg: 12, color: "#5f6b85" },
+const MONTH_LABELS = ["Fev", "Mar", "Abr", "Mai", "Jun", "Jul"]
+
+const BASE: ImpactData = {
+  co2: 147,
+  months: [
+    { label: "Fev", value: 42 },
+    { label: "Mar", value: 65 },
+    { label: "Abr", value: 38 },
+    { label: "Mai", value: 80 },
+    { label: "Jun", value: 120 },
+    { label: "Jul", value: 95 },
+  ],
+  ranking: [
+    { name: "Maria Souza", value: 312 },
+    { name: "Fernando Santos", value: 147, me: true },
+    { name: "Ana Lima", value: 96 },
+    { name: "Carlos Dias", value: 54 },
   ],
 }
 
@@ -31,49 +38,45 @@ function rand(min: number, max: number) {
   return Math.round(min + Math.random() * (max - min))
 }
 
+const METAS = [
+  { label: "Reciclar 200 kg no ano", current: 147, target: 200 },
+  { label: "Fazer 30 entregas", current: 22, target: 30 },
+  { label: "Alcançar Mobilizador do Bairro", current: 640, target: 1000 },
+]
+
 export function ImpactScreen({ onBack }: { onBack: () => void }) {
+  const [tab, setTab] = useState<Tab>("mes")
   // Random demo data generated after mount to avoid hydration mismatch.
-  const [impact, setImpact] = useState<Impact>(BASE_IMPACT)
+  const [data, setData] = useState<ImpactData>(BASE)
 
   useEffect(() => {
-    const materials = [
-      { label: "Plástico", kg: rand(18, 32), color: "#3b5fd8" },
-      { label: "Vidro", kg: rand(10, 22), color: "#1f9d3f" },
-      { label: "Papel", kg: rand(8, 20), color: "#f2a900" },
-      { label: "Metal", kg: rand(6, 16), color: "#5f6b85" },
-    ]
-    const totalKg = materials.reduce((s, m) => s + m.kg, 0)
-    setImpact({
-      totalKg,
-      deliveries: rand(15, 40),
-      pointsEarned: rand(3200, 6800),
-      co2Kg: Math.round(totalKg * 0.6),
-      materials,
+    const months = MONTH_LABELS.map((label) => ({ label, value: rand(30, 130) }))
+    const co2 = Math.round(months.reduce((s, m) => s + m.value, 0) / months.length)
+    setData({
+      co2,
+      months,
+      ranking: [
+        { name: "Maria Souza", value: rand(250, 360) },
+        { name: "Fernando Santos", value: co2, me: true },
+        { name: "Ana Lima", value: rand(60, 120) },
+        { name: "Carlos Dias", value: rand(20, 60) },
+      ].sort((a, b) => b.value - a.value),
     })
   }, [])
 
-  const maxKg = Math.max(...impact.materials.map((m) => m.kg))
-
   const phrases = [
-    `Você evitou cerca de ${impact.co2Kg} kg de CO₂ — o mesmo que ${Math.round(impact.co2Kg / 2.5)} árvores absorvem em um dia.`,
-    `Seus ${impact.totalKg} kg reciclados economizaram energia para abastecer uma casa por ${rand(4, 9)} dias.`,
-    `Você poupou cerca de ${impact.totalKg * 13} litros de água ao reciclar em vez de descartar.`,
-    `O plástico que você reciclou deixaria de poluir ${rand(2, 6)} mil litros de oceano.`,
-    `Cada entrega sua tira resíduos de aterros e devolve matéria-prima ao ciclo produtivo.`,
-  ]
-
-  const stats = [
-    { icon: Recycle, label: "Total reciclado", value: `${impact.totalKg} kg`, tone: "text-brand-blue" },
-    { icon: Package, label: "Entregas", value: `${impact.deliveries}`, tone: "text-brand-emerald" },
-    { icon: Zap, label: "Pontos gerados", value: impact.pointsEarned.toLocaleString("pt-BR"), tone: "text-[#f2a900]" },
-    { icon: Wind, label: "CO₂ evitado", value: `${impact.co2Kg} kg`, tone: "text-brand-slate" },
+    `Você evitou cerca de ${data.co2} kg de CO₂ — o mesmo que ${Math.max(1, Math.round(data.co2 / 21))} árvores absorvem em um dia.`,
+    `Seus resíduos reciclados economizaram energia para abastecer uma casa por ${rand(4, 9)} dias.`,
+    `Você poupou cerca de ${data.co2 * 15} litros de água ao reciclar em vez de descartar.`,
+    `O plástico que você reciclou deixaria de poluir milhares de litros de oceano.`,
+    `Cada entrega sua devolve matéria-prima ao ciclo produtivo e reduz o aterro.`,
   ]
 
   return (
     <div className="relative h-full w-full">
       <div className="h-full overflow-y-auto bg-gradient-to-b from-[#1a1f4d] via-[#2c4694] to-[#4d82e0] pb-[76px] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {/* header */}
-        <div className="px-[18px] pb-4 pt-14">
+        <div className="px-[18px] pb-2 pt-14">
           <button type="button" onClick={onBack} className="flex items-center gap-3.5">
             <div className="flex size-9 flex-shrink-0 items-center justify-center rounded-full bg-brand-blue">
               <ChevronLeft className="size-[18px] text-white" />
@@ -95,54 +98,43 @@ export function ImpactScreen({ onBack }: { onBack: () => void }) {
           </div>
         </div>
 
-        {/* stats grid */}
-        <div className="px-4">
-          <div className="grid grid-cols-2 gap-2.5">
-            {stats.map((s) => (
-              <div key={s.label} className="flex items-center gap-2.5 rounded-2xl bg-white px-3 py-3">
-                <div className="flex size-9 flex-shrink-0 items-center justify-center rounded-full bg-brand-blue-soft">
-                  <s.icon className={`size-[18px] ${s.tone}`} />
-                </div>
-                <div className="min-w-0">
-                  <div className="truncate text-[16px] font-semibold text-brand-navy">{s.value}</div>
-                  <div className="truncate text-[10.5px] text-brand-mute">{s.label}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* rotating sustainability phrase (replaces the old static tree line) */}
-        <div className="px-4 pt-3">
-          <div className="flex items-start gap-3 rounded-2xl bg-white/[0.1] px-4 py-3.5">
-            <div className="flex size-9 flex-shrink-0 items-center justify-center rounded-full bg-brand-green/20">
-              <Droplets className="size-[18px] text-brand-green" />
-            </div>
-            <EcoPhraseRotator phrases={phrases} className="min-h-[40px] text-[13px] leading-snug text-white" />
-          </div>
-        </div>
-
-        {/* material breakdown */}
-        <div className="px-4 pt-3">
-          <div className="rounded-2xl bg-white p-4">
-            <div className="text-[14px] font-semibold text-brand-navy">Reciclagem por material</div>
-            <div className="mt-3.5 space-y-3">
-              {impact.materials.map((m) => (
-                <div key={m.label}>
-                  <div className="flex items-center justify-between text-[12px]">
-                    <span className="text-brand-slate">{m.label}</span>
-                    <span className="font-semibold text-brand-navy">{m.kg} kg</span>
-                  </div>
-                  <div className="mt-1 h-2 overflow-hidden rounded-full bg-[#eef1fb]">
-                    <div
-                      className="h-full rounded-full"
-                      style={{ width: `${Math.round((m.kg / maxKg) * 100)}%`, backgroundColor: m.color }}
-                    />
-                  </div>
-                </div>
-              ))}
+        {/* eco logo + headline */}
+        <div className="flex flex-col items-center px-6 pt-3 text-center">
+          <div className="relative size-24 overflow-hidden rounded-full bg-white p-3 shadow-sm">
+            <div className="relative size-full">
+              <Image src="/badges/eco-logo.png" alt="Impacto ambiental" fill className="object-contain" priority />
             </div>
           </div>
+          <h2 className="mt-3 text-[17px] font-bold text-white">
+            {data.co2} kg de CO₂e evitados
+          </h2>
+          <EcoPhraseRotator
+            phrases={phrases}
+            className="mt-2 min-h-[40px] text-[13px] leading-snug text-[#dbe2f4]"
+          />
+        </div>
+
+        {/* tabs */}
+        <div className="mt-4 flex justify-center gap-2.5 px-4">
+          {(["mes", "ranking", "metas"] as Tab[]).map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => setTab(t)}
+              className={`rounded-full px-6 py-2 text-[13px] font-semibold capitalize transition-colors ${
+                tab === t ? "bg-brand-blue text-white" : "bg-white/70 text-brand-navy"
+              }`}
+            >
+              {t === "mes" ? "Mês" : t}
+            </button>
+          ))}
+        </div>
+
+        {/* tab content */}
+        <div className="px-4 pt-4">
+          {tab === "mes" && <MonthsChart months={data.months} />}
+          {tab === "ranking" && <Ranking ranking={data.ranking} />}
+          {tab === "metas" && <Metas />}
         </div>
       </div>
 
@@ -158,5 +150,86 @@ export function ImpactScreen({ onBack }: { onBack: () => void }) {
         </button>
       </div>
     </div>
+  )
+}
+
+function MonthsChart({ months }: { months: { label: string; value: number }[] }) {
+  const max = Math.max(...months.map((m) => m.value), 1)
+  return (
+    <div className="rounded-2xl bg-white p-4">
+      <div className="text-[14px] font-semibold text-brand-navy">CO₂e evitado por mês (kg)</div>
+      <div className="mt-4 flex items-end justify-between gap-2">
+        {months.map((m) => (
+          <div key={m.label} className="flex flex-1 flex-col items-center justify-end gap-1.5">
+            <span className="text-[10px] font-semibold text-brand-slate">{m.value}</span>
+            <div
+              className="w-full rounded-t-md bg-brand-blue"
+              style={{ height: `${Math.max(6, Math.round((m.value / max) * 120))}px` }}
+            />
+            <span className="text-[11px] font-medium text-brand-mute">{m.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function Ranking({ ranking }: { ranking: { name: string; value: number; me?: boolean }[] }) {
+  return (
+    <ul className="space-y-2.5">
+      {ranking.map((r, i) => (
+        <li
+          key={r.name}
+          className={`flex items-center gap-3 rounded-2xl px-4 py-3 ${
+            r.me ? "bg-brand-green/20 ring-1 ring-brand-green" : "bg-white"
+          }`}
+        >
+          <span
+            className={`flex size-7 flex-shrink-0 items-center justify-center rounded-full text-[13px] font-bold ${
+              i === 0 ? "bg-[#f2a900] text-white" : "bg-brand-blue-soft text-brand-blue"
+            }`}
+          >
+            {i + 1}
+          </span>
+          <span className={`flex-1 text-[14px] font-medium ${r.me ? "text-white" : "text-brand-navy"}`}>
+            {r.name}
+            {r.me && <span className="ml-1.5 text-[11px] text-brand-green">você</span>}
+          </span>
+          <span className={`text-[14px] font-bold ${r.me ? "text-brand-green" : "text-brand-blue"}`}>
+            {r.value} kg
+          </span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+function Metas() {
+  return (
+    <ul className="space-y-3">
+      {METAS.map((m) => {
+        const pct = Math.min(100, Math.round((m.current / m.target) * 100))
+        const done = pct >= 100
+        return (
+          <li key={m.label} className="rounded-2xl bg-white p-4">
+            <div className="flex items-center gap-2.5">
+              {done ? (
+                <CheckCircle2 className="size-[18px] flex-shrink-0 text-brand-emerald" />
+              ) : (
+                <Target className="size-[18px] flex-shrink-0 text-brand-blue" />
+              )}
+              <span className="flex-1 text-[13px] font-semibold text-brand-navy">{m.label}</span>
+              <span className="text-[12px] font-bold text-brand-blue">{pct}%</span>
+            </div>
+            <div className="mt-2.5 h-2 overflow-hidden rounded-full bg-[#eef1fb]">
+              <div className="h-full rounded-full bg-brand-green" style={{ width: `${pct}%` }} />
+            </div>
+            <div className="mt-1.5 text-right text-[11px] text-brand-mute">
+              {m.current} / {m.target}
+            </div>
+          </li>
+        )
+      })}
+    </ul>
   )
 }

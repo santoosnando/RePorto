@@ -18,18 +18,17 @@ import {
   Heart,
   Home as HomeIcon,
   Star,
-  Leaf,
-  X,
   type LucideIcon,
 } from "lucide-react"
 import { partners, USER, USER_BALANCE, POINTS_TO_NEXT, LEVEL_PROGRESS, type FallbackIconKey } from "@/lib/data"
 import { useCart } from "@/components/cart-context"
 import { CouponsScreen } from "@/components/coupons-screen"
 import { ImpactScreen } from "@/components/impact-screen"
+import { ProfileScreen } from "@/components/profile-screen"
 
 const fallbackIcons: Record<FallbackIconKey, LucideIcon> = { recycle: Recycle }
 
-type View = "home" | "rewards" | "cupons" | "impacto"
+type View = "home" | "profile" | "rewards" | "cupons" | "impacto"
 
 export function HomeView() {
   const [view, setView] = useState<View>("home")
@@ -37,8 +36,15 @@ export function HomeView() {
   return (
     <div className="h-full w-full overflow-hidden">
       {view === "home" && (
-        <ProfileScreen
+        <HomeScreen
+          onOpenProfile={() => setView("profile")}
           onOpenRewards={() => setView("rewards")}
+          onOpenCupons={() => setView("cupons")}
+        />
+      )}
+      {view === "profile" && (
+        <ProfileScreen
+          onBack={() => setView("home")}
           onOpenCupons={() => setView("cupons")}
           onOpenImpacto={() => setView("impacto")}
         />
@@ -71,34 +77,32 @@ function PartnerLogo({
   return null
 }
 
-function ProfileScreen({
+function HomeScreen({
+  onOpenProfile,
   onOpenRewards,
   onOpenCupons,
-  onOpenImpacto,
 }: {
+  onOpenProfile: () => void
   onOpenRewards: () => void
   onOpenCupons: () => void
-  onOpenImpacto: () => void
 }) {
-  const [menuOpen, setMenuOpen] = useState(false)
-
   return (
     <div className="relative h-full w-full">
       <div className="h-full w-full overflow-y-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {/* header */}
         <div className="flex items-center justify-between bg-white px-5 pt-12">
-          <span className="text-[19px] font-medium text-brand-navy">Meu perfil</span>
+          <span className="text-[19px] font-medium text-brand-navy">Início</span>
           <div className="flex items-center gap-2.5">
             <div className="flex size-9 items-center justify-center rounded-full bg-brand-blue">
               <Bell className="size-[17px] text-white" />
             </div>
             <button
               type="button"
-              onClick={() => setMenuOpen(true)}
-              className="relative size-9 overflow-hidden rounded-full border-2 border-brand-blue"
-              aria-label="Abrir menu do perfil"
+              onClick={onOpenProfile}
+              className="flex size-9 items-center justify-center rounded-full bg-brand-blue"
+              aria-label="Meu perfil"
             >
-              <Image src={USER.avatar || "/placeholder.svg"} alt={USER.name} fill className="object-cover" />
+              <User className="size-[18px] text-white" />
             </button>
           </div>
         </div>
@@ -110,18 +114,13 @@ function ProfileScreen({
               <span className="inline-block size-1.5 rounded-full bg-brand-green" />
               {USER.level}
             </span>
-            <div className="mt-2.5 flex items-center gap-2.5">
-              <div className="relative size-9 flex-shrink-0 overflow-hidden rounded-full border-2 border-white/40">
-                <Image src={USER.avatar || "/placeholder.svg"} alt={USER.name} fill className="object-cover" />
-              </div>
-              <span className="text-[18px] font-medium">{USER.name}</span>
-            </div>
+            <div className="mt-2.5 text-[18px] font-medium">{USER.name}</div>
             <div className="mt-3 text-[10px] tracking-wide text-[#b9c3e6]">SALDO DISPONÍVEL</div>
             <div className="mt-0.5 text-[26px] font-medium text-brand-green">
               {USER_BALANCE.toLocaleString("pt-BR")} <span className="text-[13px]">pts</span>
             </div>
-            <div className="absolute right-4 top-3.5 flex size-[66px] items-center justify-center rounded-full border-[3px] border-[#4a7fd6] bg-brand-navy-deep">
-              <Recycle className="size-6 text-white" />
+            <div className="absolute right-4 top-3.5 size-[66px] overflow-hidden rounded-full border-[3px] border-[#4a7fd6]">
+              <Image src={USER.avatar || "/placeholder.svg"} alt={USER.name} fill className="object-cover" />
             </div>
             <div className="mt-4 flex justify-between border-t border-white/15 pt-2.5 text-[11px] text-[#d7deee]">
               <span>
@@ -179,22 +178,6 @@ function ProfileScreen({
             </div>
             <ChevronRight className="mt-1 size-4 text-[#c3cbe6]" />
           </button>
-          <button
-            type="button"
-            onClick={onOpenImpacto}
-            className="mt-2.5 flex w-full items-start gap-3.5 rounded-[14px] bg-white/[0.08] p-3 text-left transition-colors hover:bg-white/15"
-          >
-            <div className="flex size-11 flex-shrink-0 items-center justify-center rounded-lg bg-white">
-              <Leaf className="size-[22px] text-brand-emerald" />
-            </div>
-            <div className="flex-1">
-              <div className="text-[13px] font-medium text-white">Meu impacto</div>
-              <div className="mt-0.5 text-[11px] leading-snug text-[#c3cbe6]">
-                Veja o resultado da sua reciclagem
-              </div>
-            </div>
-            <ChevronRight className="mt-1 size-4 text-[#c3cbe6]" />
-          </button>
         </div>
 
         {/* partners */}
@@ -224,70 +207,6 @@ function ProfileScreen({
         </div>
 
         <SponsorsFooter />
-      </div>
-
-      {menuOpen && (
-        <ProfileMenu
-          onClose={() => setMenuOpen(false)}
-          onOpenCupons={() => {
-            setMenuOpen(false)
-            onOpenCupons()
-          }}
-          onOpenImpacto={() => {
-            setMenuOpen(false)
-            onOpenImpacto()
-          }}
-        />
-      )}
-    </div>
-  )
-}
-
-function ProfileMenu({
-  onClose,
-  onOpenCupons,
-  onOpenImpacto,
-}: {
-  onClose: () => void
-  onOpenCupons: () => void
-  onOpenImpacto: () => void
-}) {
-  const items = [
-    { label: "Meu perfil", icon: User, onClick: onClose },
-    { label: "Carteira de cupons", icon: TicketPercent, onClick: onOpenCupons },
-    { label: "Meu impacto", icon: Leaf, onClick: onOpenImpacto },
-  ]
-
-  return (
-    <div className="absolute inset-0 z-40" role="dialog" aria-modal="true">
-      <button type="button" aria-label="Fechar menu" className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="absolute right-3 top-[52px] z-[1] w-[236px] overflow-hidden rounded-2xl bg-white shadow-xl">
-        <div className="flex items-center gap-3 bg-gradient-to-br from-[#1a2f6b] to-[#2c4694] px-4 py-3.5 text-white">
-          <div className="relative size-11 flex-shrink-0 overflow-hidden rounded-full border-2 border-white/40">
-            <Image src={USER.avatar || "/placeholder.svg"} alt={USER.name} fill className="object-cover" />
-          </div>
-          <div className="min-w-0">
-            <div className="truncate text-[14px] font-medium">{USER.name}</div>
-            <div className="truncate text-[11px] text-[#c3cbe6]">{USER.level}</div>
-          </div>
-          <button type="button" onClick={onClose} aria-label="Fechar" className="ml-auto text-white/80">
-            <X className="size-4" />
-          </button>
-        </div>
-        <ul className="py-1.5">
-          {items.map((it) => (
-            <li key={it.label}>
-              <button
-                type="button"
-                onClick={it.onClick}
-                className="flex w-full items-center gap-3 px-4 py-3 text-left text-[14px] text-brand-navy transition-colors hover:bg-brand-blue-soft"
-              >
-                <it.icon className="size-[18px] text-brand-blue" />
-                {it.label}
-              </button>
-            </li>
-          ))}
-        </ul>
       </div>
     </div>
   )
