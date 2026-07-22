@@ -21,7 +21,99 @@ export function parsePoints(price: string): number {
 }
 
 /** Static demo balance shown across the app (no backend). */
-export const USER_BALANCE = 10000
+export const USER_BALANCE = 1902
+
+/** Demo user profile shown across the app (no backend). */
+export const USER = {
+  name: "Fernando Santos",
+  avatar: "/avatar-fernando.png",
+  level: "Vizinho consciente",
+  nextLevel: "Mobilizador do bairro",
+  balance: USER_BALANCE,
+  /** Points threshold to reach the next level (integer, no decimals). */
+  nextLevelAt: 3000,
+}
+
+/** Points still needed to reach the next level, always an integer. */
+export const POINTS_TO_NEXT = Math.max(0, Math.round(USER.nextLevelAt - USER.balance))
+
+/** Progress percentage toward the next level, rounded to an integer. */
+export const LEVEL_PROGRESS = Math.min(100, Math.round((USER.balance / USER.nextLevelAt) * 100))
+
+export type Coupon = {
+  id: string
+  name: string
+  storeName: string
+  storeSlug: string
+  image: string
+  points: number
+  /** Expiry date for available coupons. */
+  validUntil?: string
+  /** Date the coupon was used (only for history). */
+  usedAt?: string
+}
+
+/** Coupons currently available to redeem/use. */
+export const AVAILABLE_COUPONS: Coupon[] = [
+  {
+    id: "ifood:combo",
+    name: "Combo burger",
+    storeName: "iFood",
+    storeSlug: "ifood",
+    image: "/loja/ifood/2.png",
+    points: 450,
+    validUntil: "30/08/2026",
+  },
+  {
+    id: "starbucks:latte",
+    name: "Caffè Latte",
+    storeName: "Starbucks",
+    storeSlug: "starbucks",
+    image: "/loja/starbucks/1.png",
+    points: 300,
+    validUntil: "15/09/2026",
+  },
+  {
+    id: "carrefour:ecobag",
+    name: "Ecobag",
+    storeName: "Carrefour",
+    storeSlug: "carrefour",
+    image: "/loja/carrefour/4.png",
+    points: 150,
+    validUntil: "10/09/2026",
+  },
+]
+
+/** Coupons already used, shown in the history tab with the date they were used. */
+export const USED_COUPONS: Coupon[] = [
+  {
+    id: "uber:desconto",
+    name: "Desconto 30%",
+    storeName: "Uber",
+    storeSlug: "uber",
+    image: "/loja/uber/2.png",
+    points: 250,
+    usedAt: "02/07/2026",
+  },
+  {
+    id: "nike:camiseta",
+    name: "Camiseta Dri-FIT",
+    storeName: "Nike",
+    storeSlug: "nike",
+    image: "/loja/nike/2.png",
+    points: 600,
+    usedAt: "18/06/2026",
+  },
+  {
+    id: "reverse-lab:pente",
+    name: "Pente",
+    storeName: "Reverse Lab",
+    storeSlug: "reverse-lab",
+    image: "/loja/reverse-lab/pente.png",
+    points: 150,
+    usedAt: "29/05/2026",
+  },
+]
 
 export type Store = {
   slug: string
