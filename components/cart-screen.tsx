@@ -13,6 +13,8 @@ export function CartScreen() {
   const [purchased, setPurchased] = useState(false)
 
   function confirmPurchase() {
+    // Converte os itens do carrinho em cupons disponíveis antes de limpar.
+    cart.addConfirmedCoupons(cart.items)
     cart.clear()
     setConfirmOpen(false)
     setPurchased(true)

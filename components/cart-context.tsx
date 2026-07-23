@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
+import type { Coupon } from "@/lib/data"
 
 export type CartItem = {
   /** Unique id per store + product. */
@@ -25,20 +26,35 @@ type CartContextValue = {
   addItem: (item: AddItemInput) => void
   removeItem: (id: string) => void
   clear: () => void
+  /** Cupons gerados a partir de compras confirmadas, exibidos em "Disponíveis". */
+  confirmedCoupons: Coupon[]
+  /** Converte os itens do carrinho em cupons e os adiciona aos disponíveis. */
+  addConfirmedCoupons: (cartItems: CartItem[]) => void
 }
 
 const CartContext = createContext<CartContextValue | null>(null)
 const STORAGE_KEY = "eco-cart"
+const COUPONS_STORAGE_KEY = "eco-confirmed-coupons"
+
+/** Gera uma data de validade 90 dias a partir de hoje no formato DD/MM/AAAA. */
+function validUntil90Days(): string {
+  const d = new Date()
+  d.setDate(d.getDate() + 90)
+  return d.toLocaleDateString("pt-BR")
+}
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
+  const [confirmedCoupons, setConfirmedCoupons] = useState<Coupon[]>([])
   const [ready, setReady] = useState(false)
 
-  // Load persisted cart once on mount so it survives navigation/refresh.
+  // Load persisted cart and confirmed coupons once on mount.
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
       if (saved) setItems(JSON.parse(saved) as CartItem[])
+      const savedCoupons = localStorage.getItem(COUPONS_STORAGE_KEY)
+      if (savedCoupons) setConfirmedCoupons(JSON.parse(savedCoupons) as Coupon[])
     } catch {
       // ignore malformed storage
     }
@@ -53,6 +69,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       // storage may be unavailable
     }
   }, [items, ready])
+
+  useEffect(() => {
+    if (!ready) return
+    try {
+      localStorage.setItem(COUPONS_STORAGE_KEY, JSON.stringify(confirmedCoupons))
+    } catch {
+      // storage may be unavailable
+    }
+  }, [confirmedCoupons, ready])
 
   const addItem = useCallback((item: AddItemInput) => {
     const id = `${item.storeSlug}:${item.name}`
@@ -71,11 +96,27 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clear = useCallback(() => setItems([]), [])
 
+  const addConfirmedCoupons = useCallback((cartItems: CartItem[]) => {
+    const newCoupons: Coupon[] = cartItems.flatMap((item) =>
+      Array.from({ length: item.qty }, (_, i) => ({
+        id: `confirmed:${item.id}:${Date.now()}:${i}`,
+        name: item.name,
+        storeName: item.storeName,
+        storeSlug: item.storeSlug,
+        image: item.image,
+        points: item.points,
+        description: item.description,
+        validUntil: validUntil90Days(),
+      })),
+    )
+    setConfirmedCoupons((prev) => [...prev, ...newCoupons])
+  }, [])
+
   const value = useMemo<CartContextValue>(() => {
     const count = items.reduce((sum, i) => sum + i.qty, 0)
     const total = items.reduce((sum, i) => sum + i.points * i.qty, 0)
-    return { items, count, total, ready, addItem, removeItem, clear }
-  }, [items, ready, addItem, removeItem, clear])
+    return { items, count, total, ready, addItem, removeItem, clear, confirmedCoupons, addConfirmedCoupons }
+  }, [items, ready, addItem, removeItem, clear, confirmedCoupons, addConfirmedCoupons])
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>
 }

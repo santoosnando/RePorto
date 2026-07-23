@@ -4,12 +4,17 @@ import { useState } from "react"
 import Image from "next/image"
 import { ChevronLeft, Home as HomeIcon, TicketPercent, CalendarClock, CheckCircle2 } from "lucide-react"
 import { AVAILABLE_COUPONS, USED_COUPONS, type Coupon } from "@/lib/data"
+import { useCart } from "@/components/cart-context"
 
 type Tab = "available" | "history"
 
 export function CouponsScreen({ onBack }: { onBack: () => void }) {
   const [tab, setTab] = useState<Tab>("available")
-  const list = tab === "available" ? AVAILABLE_COUPONS : USED_COUPONS
+  const { confirmedCoupons } = useCart()
+
+  // Cupons disponíveis = os estáticos + os gerados por compras confirmadas.
+  const availableCoupons = [...AVAILABLE_COUPONS, ...confirmedCoupons]
+  const list = tab === "available" ? availableCoupons : USED_COUPONS
 
   return (
     <div className="relative h-full w-full">
