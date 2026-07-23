@@ -30,11 +30,16 @@ type CartContextValue = {
   confirmedCoupons: Coupon[]
   /** Converte os itens do carrinho em cupons e os adiciona aos disponíveis. */
   addConfirmedCoupons: (cartItems: CartItem[]) => void
+  /** Cupons utilizados dinamicamente (além dos estáticos de USED_COUPONS). */
+  usedCoupons: Coupon[]
+  /** Move um cupom disponível para o histórico, registrando a data de uso. */
+  useCoupon: (couponId: string, staticCoupon?: Coupon) => void
 }
 
 const CartContext = createContext<CartContextValue | null>(null)
 const STORAGE_KEY = "eco-cart"
 const COUPONS_STORAGE_KEY = "eco-confirmed-coupons"
+const USED_COUPONS_STORAGE_KEY = "eco-used-coupons"
 
 /** Gera uma data de validade 90 dias a partir de hoje no formato DD/MM/AAAA. */
 function validUntil90Days(): string {
@@ -46,15 +51,18 @@ function validUntil90Days(): string {
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
   const [confirmedCoupons, setConfirmedCoupons] = useState<Coupon[]>([])
+  const [usedCoupons, setUsedCoupons] = useState<Coupon[]>([])
   const [ready, setReady] = useState(false)
 
-  // Load persisted cart and confirmed coupons once on mount.
+  // Load persisted cart, confirmed coupons and used coupons once on mount.
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
       if (saved) setItems(JSON.parse(saved) as CartItem[])
       const savedCoupons = localStorage.getItem(COUPONS_STORAGE_KEY)
       if (savedCoupons) setConfirmedCoupons(JSON.parse(savedCoupons) as Coupon[])
+      const savedUsed = localStorage.getItem(USED_COUPONS_STORAGE_KEY)
+      if (savedUsed) setUsedCoupons(JSON.parse(savedUsed) as Coupon[])
     } catch {
       // ignore malformed storage
     }
@@ -78,6 +86,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       // storage may be unavailable
     }
   }, [confirmedCoupons, ready])
+
+  useEffect(() => {
+    if (!ready) return
+    try {
+      localStorage.setItem(USED_COUPONS_STORAGE_KEY, JSON.stringify(usedCoupons))
+    } catch {
+      // storage may be unavailable
+    }
+  }, [usedCoupons, ready])
 
   const addItem = useCallback((item: AddItemInput) => {
     const id = `${item.storeSlug}:${item.name}`
@@ -112,11 +129,34 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setConfirmedCoupons((prev) => [...prev, ...newCoupons])
   }, [])
 
+  const useCoupon = useCallback((couponId: string, staticCoupon?: Coupon) => {
+    const today = new Date().toLocaleDateString("pt-BR")
+
+    // If it's a dynamic confirmed coupon, remove from available and add to used.
+    setConfirmedCoupons((prev) => {
+      const target = prev.find((c) => c.id === couponId)
+      if (target) {
+        setUsedCoupons((u) => [...u, { ...target, usedAt: today, validUntil: undefined }])
+        return prev.filter((c) => c.id !== couponId)
+      }
+      return prev
+    })
+
+    // If it's a static coupon passed explicitly, just register it as used.
+    if (staticCoupon) {
+      setUsedCoupons((u) => {
+        // avoid duplicating a static coupon that was already used
+        if (u.some((c) => c.id === couponId)) return u
+        return [...u, { ...staticCoupon, usedAt: today, validUntil: undefined }]
+      })
+    }
+  }, [])
+
   const value = useMemo<CartContextValue>(() => {
     const count = items.reduce((sum, i) => sum + i.qty, 0)
     const total = items.reduce((sum, i) => sum + i.points * i.qty, 0)
-    return { items, count, total, ready, addItem, removeItem, clear, confirmedCoupons, addConfirmedCoupons }
-  }, [items, ready, addItem, removeItem, clear, confirmedCoupons, addConfirmedCoupons])
+    return { items, count, total, ready, addItem, removeItem, clear, confirmedCoupons, addConfirmedCoupons, usedCoupons, useCoupon }
+  }, [items, ready, addItem, removeItem, clear, confirmedCoupons, addConfirmedCoupons, usedCoupons, useCoupon])
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>
 }
