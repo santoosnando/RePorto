@@ -28,6 +28,10 @@ import { ProfileScreen } from "@/components/profile-screen"
 
 const fallbackIcons: Record<FallbackIconKey, LucideIcon> = { recycle: Recycle }
 
+function FootballIcon({ className }: { className?: string }) {
+  return <img src="/icons/soccer-ball-thin.svg" alt="" aria-hidden="true" className={className} />
+}
+
 type View = "home" | "profile" | "rewards" | "cupons" | "impacto"
 
 export function HomeView() {
@@ -271,7 +275,7 @@ function RewardsScreen({ onBack }: { onBack: () => void }) {
     { label: "Moda e beleza", icon: Heart, href: null },
     { label: "Produtos reciclados", icon: Recycle, href: "/loja/reverse-lab" },
     { label: "Pet", icon: HomeIcon, href: null },
-    { label: "Serviços", icon: Star, href: null },
+    { label: "Lazer", icon: FootballIcon, href: "/loja/flamengo" },
   ] as const
 
   return (
