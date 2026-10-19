@@ -29,14 +29,7 @@ import { ProfileScreen } from "@/components/profile-screen"
 const fallbackIcons: Record<FallbackIconKey, LucideIcon> = { recycle: Recycle }
 
 function FootballIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 48 48" fill="none" aria-hidden="true" className={className}>
-      <circle cx="24" cy="24" r="19" fill="currentColor" opacity=".12" />
-      <path d="m24 10 6 4 2 7-5 5h-6l-5-5 2-7 6-4Z" fill="currentColor" />
-      <path d="m16 21-7 2m23-2 7 2M21 26l-3 10m9-10 3 10M18 14l-5-4m17 4 5-4" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" />
-      <circle cx="24" cy="24" r="19" stroke="currentColor" strokeWidth="2.5" />
-    </svg>
-  )
+  return <img src="/icons/soccer-ball-thin.svg" alt="" aria-hidden="true" className={className} />
 }
 
 type View = "home" | "profile" | "rewards" | "cupons" | "impacto"
