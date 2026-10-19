@@ -36,7 +36,7 @@ export function FlamengoPromotion() {
         </div>
         <div className="px-4 py-3.5">
           <p className="text-center text-[11px] font-semibold uppercase tracking-wide text-[#b20d1d]">Recompensa especial</p>
-          <p className="mt-1 text-center text-[13px] leading-snug text-brand-slate">Os 30 melhores colocados no ranking geral de entregas recebem prioridade para um ingresso.</p>
+          <p className="mt-1 text-center text-[13px] leading-snug text-brand-slate">Os 30 melhores colocados no ranking geral de entregas recebem um ingresso para a partida.</p>
           <button type="button" onClick={() => setInstructionsOpen(true)} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-[#f5e5e5] px-3 py-2.5 text-[13px] font-semibold text-[#a90816]">
             <Info className="size-4" /> Instruções da promoção
           </button>
