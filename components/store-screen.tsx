@@ -145,28 +145,25 @@ export function StoreScreen({ store }: { store: Store }) {
         </div>
         <div className="pt-[38px]">
           <div className="text-[18px] font-medium text-brand-navy">{store.name}</div>
-          <div className="mt-1 flex items-center gap-2 text-[11px] text-brand-slate">
-            <span className="flex items-center gap-1 text-[#0f9d58]">
-              <span className="inline-block size-1.5 rounded-full bg-[#0f9d58]" />
-              Aberto agora
-            </span>
-            <span>·</span>
-            <span className="flex items-center gap-[3px]">
-              <Star className="size-3 fill-[#f2a900] text-[#f2a900]" />
-              {store.rating}
-            </span>
-          </div>
+          {!store.promotion && (
+            <div className="mt-1 flex items-center gap-2 text-[11px] text-brand-slate">
+              <span className="flex items-center gap-1 text-[#0f9d58]"><span className="inline-block size-1.5 rounded-full bg-[#0f9d58]" />Aberto agora</span>
+              <span>·</span>
+              <span className="flex items-center gap-[3px]"><Star className="size-3 fill-[#f2a900] text-[#f2a900]" />{store.rating}</span>
+            </div>
+          )}
           <div className="mt-1 text-[11px] text-brand-mute">{store.tagline}</div>
         </div>
       </div>
 
-      {/* search */}
-      <div className="bg-white px-4 pb-4 pt-3">
-        <div className="flex items-center gap-2 rounded-[22px] bg-[#f2f3f7] px-4 py-[11px] text-brand-mute">
-          <Search className="size-4" />
-          <span className="text-[13px]">O que você procura?</span>
+      {!store.promotion && (
+        <div className="bg-white px-4 pb-4 pt-3">
+          <div className="flex items-center gap-2 rounded-[22px] bg-[#f2f3f7] px-4 py-[11px] text-brand-mute">
+            <Search className="size-4" />
+            <span className="text-[13px]">O que você procura?</span>
+          </div>
         </div>
-      </div>
+      )}
 
       {store.promotion === "flamengo-ingressos" ? (
         <FlamengoPromotion />
