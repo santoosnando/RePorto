@@ -148,6 +148,8 @@ export type Store = {
   /** Two-stop gradient used for the cover and logo background. */
   gradient: [string, string]
   products: Product[]
+  /** Promotion store with a ranking instead of products. */
+  promotion?: "flamengo-ingressos"
 }
 
 export const stores: Store[] = [
@@ -204,6 +206,16 @@ export const stores: Store[] = [
         description: "Relógio de parede produzido a partir de plástico reciclado, com design único e artesanal.",
       },
     ],
+  },
+  {
+    slug: "flamengo",
+    name: "Flamengo",
+    tagline: "Concorra a ingressos para Flamengo x Chapecoense no Maracanã",
+    rating: "5.0",
+    logo: "/loja/flamengo-logo.png",
+    gradient: ["#8b0000", "#d71920"],
+    promotion: "flamengo-ingressos",
+    products: [],
   },
   {
     slug: "carrefour",

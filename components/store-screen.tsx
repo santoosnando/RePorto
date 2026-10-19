@@ -20,6 +20,7 @@ import type { Store, FallbackIconKey, Product } from "@/lib/data"
 import { parsePoints } from "@/lib/data"
 import { useCart } from "@/components/cart-context"
 import { ProductModal } from "@/components/product-modal"
+import { FlamengoPromotion } from "@/components/flamengo-promotion"
 
 const fallbackIcons: Record<FallbackIconKey, LucideIcon> = { recycle: Recycle }
 
@@ -167,7 +168,10 @@ export function StoreScreen({ store }: { store: Store }) {
         </div>
       </div>
 
-      {/* products */}
+      {store.promotion === "flamengo-ingressos" ? (
+        <FlamengoPromotion />
+      ) : (
+      /* products */
       <div className="bg-white px-4 pb-24">
         <div className="grid grid-cols-2 gap-3.5">
           {store.products.map((p) => (
@@ -188,6 +192,7 @@ export function StoreScreen({ store }: { store: Store }) {
           ))}
         </div>
       </div>
+      )}
 
       {/* floating cart + home */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-center gap-3 bg-gradient-to-t from-white via-white/95 to-transparent pb-6 pt-4">
