@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
-import { Info, Trophy, X } from "lucide-react"
+import { Info, Trophy, X, Ticket, ExternalLink } from "lucide-react"
+import { USER } from "@/lib/data"
 
 const ranking = [
   ["Maria Usuário", "12.540 pts"], ["Fernando Santos", "9.870 pts"], ["Ana Oliveira", "8.420 pts"],
@@ -17,8 +18,49 @@ const ranking = [
   ["Marcelo Dias", "3.910 pts"], ["Evelyn Martins", "3.800 pts"], ["Caio Oliveira", "3.690 pts"],
 ].map(([name, points], index) => ({ position: index + 1, name, points }))
 
+const CAMPAIGN_STORAGE_KEY = "flamengo-campaign-open"
+const REDEMPTION_STORAGE_KEY = "flamengo-ticket-redeemed"
+const TICKET_COST = 500
+const REDEMPTION_URL = "https://ingressos.flamengo.com.br/resgate/flamengo-chapecoense"
+
 export function FlamengoPromotion() {
   const [instructionsOpen, setInstructionsOpen] = useState(false)
+  const [campaignOpen, setCampaignOpen] = useState(false)
+  const [redeemed, setRedeemed] = useState(false)
+  const [balance, setBalance] = useState(USER.balance)
+  const [feedback, setFeedback] = useState<string | null>(null)
+
+  useEffect(() => {
+    try {
+      setCampaignOpen(localStorage.getItem(CAMPAIGN_STORAGE_KEY) === "true")
+      setRedeemed(localStorage.getItem(REDEMPTION_STORAGE_KEY) === "true")
+      const savedBalance = localStorage.getItem("eco-points-balance")
+      if (savedBalance) setBalance(Number(savedBalance))
+    } catch {
+      // storage may be unavailable
+    }
+  }, [])
+
+  function openCampaign() {
+    setCampaignOpen(true)
+    setInstructionsOpen(false)
+    try { localStorage.setItem(CAMPAIGN_STORAGE_KEY, "true") } catch { /* ignore */ }
+  }
+
+  function redeemTicket() {
+    if (balance < TICKET_COST) {
+      setFeedback(`Você precisa de mais ${TICKET_COST - balance} pontos para resgatar.`)
+      return
+    }
+    const nextBalance = balance - TICKET_COST
+    setBalance(nextBalance)
+    setRedeemed(true)
+    try {
+      localStorage.setItem("eco-points-balance", String(nextBalance))
+      localStorage.setItem(REDEMPTION_STORAGE_KEY, "true")
+    } catch { /* keep the redemption in memory */ }
+    window.location.href = REDEMPTION_URL
+  }
 
   return (
     <section className="bg-white px-4 pb-24">
@@ -37,9 +79,18 @@ export function FlamengoPromotion() {
         <div className="px-4 py-3.5">
           <p className="text-center text-[11px] font-semibold uppercase tracking-wide text-[#b20d1d]">Recompensa especial</p>
           <p className="mt-1 text-center text-[13px] leading-snug text-brand-slate">Os 30 melhores colocados no ranking geral de entregas recebem um ingresso para a partida.</p>
-          <button type="button" onClick={() => setInstructionsOpen(true)} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-[#f5e5e5] px-3 py-2.5 text-[13px] font-semibold text-[#a90816]">
-            <Info className="size-4" /> Instruções da promoção
-          </button>
+          <div className="mt-3 space-y-2">
+            {campaignOpen ? (
+              <button type="button" onClick={redeemTicket} disabled={redeemed} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#b20d1d] px-3 py-2.5 text-[13px] font-bold text-white disabled:cursor-default disabled:opacity-60">
+                <Ticket className="size-4" /> {redeemed ? "Ingresso resgatado" : "Resgate seu ingresso · 500 pts"}
+              </button>
+            ) : (
+              <button type="button" onClick={() => setInstructionsOpen(true)} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#f5e5e5] px-3 py-2.5 text-[13px] font-semibold text-[#a90816]">
+                <Info className="size-4" /> Instruções da promoção
+              </button>
+            )}
+            {feedback && <p className="text-center text-[11px] font-medium text-[#b20d1d]">{feedback}</p>}
+          </div>
         </div>
       </div>
 
@@ -62,12 +113,26 @@ export function FlamengoPromotion() {
       </ol>
       <p className="mt-3 text-center text-[10px] text-brand-mute">Em caso de empate, terá prioridade quem atingir a pontuação primeiro.</p>
 
-      {instructionsOpen && <InstructionsModal onClose={() => setInstructionsOpen(false)} />}
+      {instructionsOpen && (
+        <InstructionsModal
+          onClose={() => setInstructionsOpen(false)}
+          campaignOpen={campaignOpen}
+          onOpenCampaign={openCampaign}
+        />
+      )}
     </section>
   )
 }
 
-function InstructionsModal({ onClose }: { onClose: () => void }) {
+function InstructionsModal({
+  onClose,
+  campaignOpen,
+  onOpenCampaign,
+}: {
+  onClose: () => void
+  campaignOpen: boolean
+  onOpenCampaign: () => void
+}) {
   return (
     <div className="absolute inset-0 z-40 flex items-end bg-black/45 p-3" role="dialog" aria-modal="true" aria-label="Instruções da promoção">
       <div className="w-full rounded-3xl bg-white p-5 shadow-2xl">
@@ -84,7 +149,10 @@ function InstructionsModal({ onClose }: { onClose: () => void }) {
           <li><b className="text-brand-navy">6.</b> O ingresso é individual e dá acesso ao jogo Flamengo x Chapecoense, em 02 de dezembro, no Maracanã.</li>
           <li><b className="text-brand-navy">7.</b> A organização poderá solicitar documento de identificação e comunicará os contemplados pelos canais cadastrados.</li>
         </ol>
-        <button type="button" onClick={onClose} className="mt-5 w-full rounded-xl bg-[#b20d1d] py-3 text-[13px] font-bold text-white">Entendi</button>
+        <button type="button" onClick={campaignOpen ? onClose : onOpenCampaign} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#b20d1d] py-3 text-[13px] font-bold text-white">
+          {campaignOpen ? <ExternalLink className="size-4" /> : <Ticket className="size-4" />}
+          {campaignOpen ? "Fechar instruções" : "Abrir resgate dos ingressos"}
+        </button>
       </div>
     </div>
   )
