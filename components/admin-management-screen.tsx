@@ -29,13 +29,14 @@ export function AdminManagementScreen({ type, onBack }: { type: "campaigns" | "s
   function saveCampaign(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const form = new FormData(event.currentTarget)
+    const image = form.get("cardImage")
     const next: Campaign = {
       id: editingCampaign?.id ?? `campaign-${Date.now()}`,
       name: String(form.get("name") || "Nova campanha"),
       period: `${String(form.get("periodFrom") || "")} - ${String(form.get("periodTo") || "")}`,
       beneficiaries: String(form.get("beneficiaries") || "0"),
       category: String(form.get("category") || ""),
-      cardImage: String(form.get("cardImage") || "/placeholder.svg"),
+      cardImage: image instanceof File && image.size > 0 ? URL.createObjectURL(image) : editingCampaign?.cardImage ?? "/placeholder.svg",
       modalColor: String(form.get("modalColor") || "#4169e1"),
     }
     setCampaigns((current) => editingCampaign ? current.map((item) => item.id === editingCampaign.id ? next : item) : [...current, next])
@@ -61,7 +62,7 @@ export function AdminManagementScreen({ type, onBack }: { type: "campaigns" | "s
         <main className="space-y-3 px-3 py-4">
           {campaigns.map((campaign) => (
             <article key={campaign.id} className="rounded-2xl bg-white p-4">
-              <div className="flex items-start gap-3"><img src={campaign.cardImage} alt="" className="size-14 rounded-xl object-contain" /><div className="min-w-0 flex-1"><h2 className="text-[14px] font-bold text-brand-navy">{campaign.name}</h2><p className="mt-1 text-[11px] text-brand-slate">{campaign.period} · {campaign.beneficiaries} beneficiados · {campaign.category}</p></div></div>
+              <div className="flex items-start gap-3"><img src={campaign.cardImage} alt="" className="size-14 object-contain" /><div className="min-w-0 flex-1"><h2 className="text-[14px] font-bold text-brand-navy">{campaign.name}</h2><p className="mt-1 text-[11px] text-brand-slate">{campaign.period} · {campaign.beneficiaries} beneficiados · {campaign.category}</p></div></div>
               {viewingCampaign?.id === campaign.id ? (
                 <div className="mt-3 rounded-xl bg-[#f8f9fd] p-3"><CampaignPreview campaign={campaign} /><button type="button" onClick={() => setViewingCampaign(null)} className="mt-3 w-full rounded-lg bg-brand-blue py-2 text-[11px] font-bold text-white">Fechar pré-visualização</button></div>
               ) : showCampaignForm && editingCampaign?.id === campaign.id ? (
@@ -71,7 +72,7 @@ export function AdminManagementScreen({ type, onBack }: { type: "campaigns" | "s
               )}
             </article>
           ))}
-          {showCampaignForm ? <CampaignForm campaign={editingCampaign} onSave={saveCampaign} onClose={() => { setShowCampaignForm(false); setEditingCampaign(null) }} /> : <button type="button" onClick={() => setShowCampaignForm(true)} className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-white/60 bg-white/10 py-5 text-[13px] font-bold text-white"><Plus className="size-4" /> Adicionar nova campanha</button>}
+          {showCampaignForm && !editingCampaign ? <CampaignForm campaign={null} onSave={saveCampaign} onClose={() => setShowCampaignForm(false)} /> : <button type="button" onClick={() => { setEditingCampaign(null); setShowCampaignForm(true) }} className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-white/60 bg-white/10 py-5 text-[13px] font-bold text-white"><Plus className="size-4" /> Adicionar nova campanha</button>}
         </main>
       ) : (
         <main className="space-y-3 px-3 py-4">
@@ -86,7 +87,7 @@ export function AdminManagementScreen({ type, onBack }: { type: "campaigns" | "s
 }
 
 function CampaignPreview({ campaign }: { campaign: Campaign }) {
-  return <div className="overflow-hidden rounded-xl border border-[#f1d4d4] bg-white shadow-sm"><div className="flex items-center gap-3 bg-gradient-to-r from-[#8f0a17] to-[#d71920] px-3 py-3 text-white"><img src={campaign.cardImage} alt="" className="size-12 rounded-lg bg-white object-contain p-1" /><div className="min-w-0"><p className="text-[9px] font-semibold uppercase tracking-wide text-white/75">Recompensa especial</p><h3 className="truncate text-[13px] font-bold">{campaign.name}</h3><p className="text-[10px] text-white/85">{campaign.period}</p></div></div><div className="px-3 py-3"><p className="text-center text-[11px] leading-snug text-brand-slate">Os {campaign.beneficiaries} melhores colocados no ranking geral de entregas recebem um ingresso para a partida.</p><span className="mt-2 block text-center text-[10px] font-bold text-[#a90816]">Categoria: {campaign.category}</span></div></div>
+  return <div className="overflow-hidden rounded-xl border border-[#f1d4d4] bg-white shadow-sm"><div className="flex items-center gap-3 bg-gradient-to-r from-[#8f0a17] to-[#d71920] px-3 py-3 text-white"><img src={campaign.cardImage} alt="" className="size-12 bg-white object-contain p-1" /><div className="min-w-0"><p className="text-[9px] font-semibold uppercase tracking-wide text-white/75">Recompensa especial</p><h3 className="truncate text-[13px] font-bold">{campaign.name}</h3><p className="text-[10px] text-white/85">{campaign.period}</p></div></div><div className="px-3 py-3"><p className="text-center text-[11px] leading-snug text-brand-slate">Os {campaign.beneficiaries} melhores colocados no ranking geral de entregas recebem um ingresso para a partida.</p><span className="mt-2 block text-center text-[10px] font-bold text-[#a90816]">Categoria: {campaign.category}</span></div></div>
 }
 
 function ProductForm({ onSave, onClose }: { onSave: (product: ManagedProduct) => void; onClose: () => void }) {
@@ -109,7 +110,6 @@ function CampaignForm({ campaign, onSave, onClose }: { campaign: Campaign | null
   const fields = [
     ["name", "Nome da campanha", campaign?.name ?? ""],
     ["beneficiaries", "Quantidade de beneficiados", campaign?.beneficiaries ?? ""],
-    ["cardImage", "Imagem do card", campaign?.cardImage ?? ""],
   ]
 
   return (
@@ -133,6 +133,11 @@ function CampaignForm({ campaign, onSave, onClose }: { campaign: Campaign | null
             {name === "beneficiaries" && <span className="mt-1 block text-[10px] font-normal text-brand-slate">Lista de usuários que concorrerão ao benefício</span>}
           </label>
         ))}
+        <label className="block text-[11px] font-semibold text-brand-navy">
+          Imagem do card
+          <input name="cardImage" type="file" accept="image/*" className="mt-1 w-full rounded-lg border border-[#cbd5e1] bg-white px-3 py-2.5 text-[12px] font-normal text-brand-navy file:mr-3 file:rounded-md file:border-0 file:bg-[#eef2ff] file:px-2 file:py-1 file:text-[11px] file:font-semibold file:text-brand-blue" />
+          {campaign?.cardImage && <span className="mt-1 block text-[10px] font-normal text-brand-slate">Selecione uma nova imagem para substituir a atual.</span>}
+        </label>
         <div className="grid grid-cols-2 gap-2">
           <label className="block text-[11px] font-semibold text-brand-navy">De<input name="periodFrom" type="date" defaultValue={periodFrom} required className="mt-1 w-full rounded-lg border border-[#cbd5e1] bg-white px-3 py-2.5 text-[12px] font-normal text-brand-navy" /></label>
           <label className="block text-[11px] font-semibold text-brand-navy">Até<input name="periodTo" type="date" defaultValue={periodTo} required className="mt-1 w-full rounded-lg border border-[#cbd5e1] bg-white px-3 py-2.5 text-[12px] font-normal text-brand-navy" /></label>
