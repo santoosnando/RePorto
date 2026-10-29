@@ -160,6 +160,41 @@ function HomeScreen({
             <Search className="size-4" />
             <span className="text-[13px]">O que você procura?</span>
           </div>
+          <div className="mt-4">
+            <div className="mb-2 flex items-center justify-between px-1">
+              <span className="text-[11px] font-semibold uppercase tracking-wide text-white">Campanhas</span>
+              <span className="text-[10px] text-[#c3cbe6]">Participe e concorra</span>
+            </div>
+            <div className="touch-pan-x overflow-x-auto overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <div className="flex w-max gap-3">
+                <Link
+                  href="/loja/flamengo"
+                  className="block w-[calc(100vw-32px)] max-w-[360px] overflow-hidden rounded-2xl bg-white shadow-sm transition-transform active:scale-[.99]"
+                >
+                  <div className="flex items-center gap-3 bg-gradient-to-r from-[#a90816] to-[#d71920] px-4 py-3 text-white">
+                    <Image
+                      src="/loja/flamengo-logo.png"
+                      alt="Flamengo"
+                      width={44}
+                      height={44}
+                      className="size-11 rounded-xl bg-white object-contain p-1"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] font-semibold uppercase tracking-wide text-white/75">Recompensa especial</p>
+                      <h2 className="mt-0.5 truncate text-[15px] font-bold">Flamengo x Chapecoense</h2>
+                      <p className="text-[11px] text-white/85">02 de dezembro · Maracanã</p>
+                    </div>
+                    <ChevronRight className="size-5 shrink-0 text-white/80" />
+                  </div>
+                  <div className="flex items-center justify-between gap-3 px-4 py-3">
+                    <p className="text-[12px] leading-snug text-brand-slate">Os 30 melhores colocados no ranking geral de entregas recebem um ingresso para a partida.</p>
+                    <span className="shrink-0 rounded-full bg-[#f5e5e5] px-2.5 py-1 text-[10px] font-bold text-[#a90816]">Ver campanha</span>
+                  </div>
+                </Link>
+              </div>
+            </div>
+          </div>
+
           <div className="mt-2.5 flex items-center gap-3.5 rounded-[14px] bg-white/[0.08] p-3">
             <div className="flex size-11 items-center justify-center rounded-lg bg-white">
               <QrCode className="size-6 text-brand-navy" />
