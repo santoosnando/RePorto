@@ -9,6 +9,7 @@ import {
   Leaf,
   Trophy,
   ReceiptText,
+  Shield,
   ChevronRight,
   type LucideIcon,
 } from "lucide-react"
@@ -24,10 +25,14 @@ export function ProfileScreen({
   onBack,
   onOpenCupons,
   onOpenImpacto,
+  onOpenAdmin,
+  displayName,
 }: {
   onBack: () => void
   onOpenCupons: () => void
   onOpenImpacto: () => void
+  onOpenAdmin: () => void
+  displayName: string
 }) {
   const menu: MenuItem[] = [
     { label: "Carteira de cupons", icon: TicketPercent, onClick: onOpenCupons },
@@ -61,9 +66,9 @@ export function ProfileScreen({
 
           <div className="mt-2 flex flex-col items-center text-center">
             <div className="relative size-28 overflow-hidden rounded-full border-4 border-brand-blue">
-              <Image src={USER.avatar || "/placeholder.svg"} alt={USER.name} fill className="object-cover" />
+              <Image src={USER.avatar || "/placeholder.svg"} alt={displayName} fill className="object-cover" />
             </div>
-            <h1 className="mt-4 text-[24px] font-bold text-brand-ink">{USER.name}</h1>
+            <h1 className="mt-4 text-[24px] font-bold text-brand-ink">{displayName}</h1>
             <p className="mt-0.5 text-[16px] italic text-brand-slate">{USER.level}</p>
             <button
               type="button"
@@ -110,6 +115,15 @@ export function ProfileScreen({
               <ChevronRight className="size-4 text-brand-mute" />
             </button>
           ))}
+          <button
+            type="button"
+            onClick={onOpenAdmin}
+            className="flex w-full items-center gap-3.5 rounded-2xl bg-white px-4 py-4 text-left transition-transform active:scale-[0.99]"
+          >
+            <Shield className="size-6 flex-shrink-0 text-brand-blue" />
+            <span className="flex-1 text-[16px] font-semibold text-brand-navy">Perfil adm</span>
+            <ChevronRight className="size-4 text-brand-mute" />
+          </button>
         </div>
 
         <p className="px-6 pb-2 pt-6 text-[13px] text-white/80">

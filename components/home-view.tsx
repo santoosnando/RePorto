@@ -25,6 +25,7 @@ import { useCart } from "@/components/cart-context"
 import { CouponsScreen } from "@/components/coupons-screen"
 import { ImpactScreen } from "@/components/impact-screen"
 import { ProfileScreen } from "@/components/profile-screen"
+import { AdminProfileScreen } from "@/components/admin-profile-screen"
 
 const fallbackIcons: Record<FallbackIconKey, LucideIcon> = { recycle: Recycle }
 
@@ -32,10 +33,11 @@ function FootballIcon({ className }: { className?: string }) {
   return <img src="/icons/soccer-ball-thin.svg" alt="" aria-hidden="true" className={className} />
 }
 
-type View = "home" | "profile" | "rewards" | "cupons" | "impacto"
+type View = "home" | "profile" | "admin-profile" | "rewards" | "cupons" | "impacto"
 
 export function HomeView() {
   const [view, setView] = useState<View>("home")
+  const [profileName, setProfileName] = useState(USER.name)
 
   return (
     <div className="h-full w-full overflow-hidden">
@@ -51,6 +53,16 @@ export function HomeView() {
           onBack={() => setView("home")}
           onOpenCupons={() => setView("cupons")}
           onOpenImpacto={() => setView("impacto")}
+          onOpenAdmin={() => setView("admin-profile")}
+          displayName={profileName}
+        />
+      )}
+      {view === "admin-profile" && (
+        <AdminProfileScreen
+          onBack={() => setView("profile")}
+          onSwitchUser={() => setView("profile")}
+          displayName={profileName}
+          onNameChange={setProfileName}
         />
       )}
       {view === "rewards" && <RewardsScreen onBack={() => setView("home")} />}
