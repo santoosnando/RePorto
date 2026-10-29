@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { ArrowLeft, Pencil, Package, Users, Bell, Database, ShoppingBag, Target, Warehouse, ClipboardList, ChevronRight } from "lucide-react"
+import { ArrowLeft, Pencil, Package, Users, Bell, Database, ShoppingBag, Target, Warehouse, ClipboardList, ChevronRight, Megaphone, Store as StoreIcon } from "lucide-react"
 import { USER } from "@/lib/data"
 
 const modules = [
@@ -23,14 +23,24 @@ export function AdminProfileScreen({
   onSwitchUser,
   displayName,
   onNameChange,
+  onOpenCampaigns,
+  onOpenStores,
 }: {
   onBack: () => void
   onSwitchUser: () => void
   displayName: string
   onNameChange: (name: string) => void
+  onOpenCampaigns: () => void
+  onOpenStores: () => void
 }) {
   const [editing, setEditing] = useState(false)
   const [draftName, setDraftName] = useState(displayName)
+  const adminModules = [
+    ...modules.slice(0, 2),
+    ["Campanhas", Megaphone, onOpenCampaigns] as const,
+    ["Lojas", StoreIcon, onOpenStores] as const,
+    ...modules.slice(2).map(([label, Icon]) => [label, Icon, undefined] as const),
+  ]
 
   function saveName() {
     const nextName = draftName.trim()
@@ -63,8 +73,8 @@ export function AdminProfileScreen({
         </div>
 
         <div className="space-y-2.5 px-3 pt-5">
-          {modules.map(([label, Icon]) => (
-            <button key={label} type="button" className="flex w-full items-center gap-3 rounded-xl bg-white px-4 py-3 text-left">
+          {adminModules.map(([label, Icon, action]) => (
+            <button key={label} type="button" onClick={action} className="flex w-full items-center gap-3 rounded-xl bg-white px-4 py-3 text-left">
               <Icon className="size-5 text-[#4c82ff]" />
               <span className="flex-1 text-[12px] font-bold text-[#2d3263]">{label}</span>
               <ChevronRight className="size-4 text-[#a6adca]" />

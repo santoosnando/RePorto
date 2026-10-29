@@ -26,6 +26,7 @@ import { CouponsScreen } from "@/components/coupons-screen"
 import { ImpactScreen } from "@/components/impact-screen"
 import { ProfileScreen } from "@/components/profile-screen"
 import { AdminProfileScreen } from "@/components/admin-profile-screen"
+import { AdminManagementScreen } from "@/components/admin-management-screen"
 
 const fallbackIcons: Record<FallbackIconKey, LucideIcon> = { recycle: Recycle }
 
@@ -33,7 +34,7 @@ function FootballIcon({ className }: { className?: string }) {
   return <img src="/icons/soccer-ball-thin.svg" alt="" aria-hidden="true" className={className} />
 }
 
-type View = "home" | "profile" | "admin-profile" | "rewards" | "cupons" | "impacto"
+type View = "home" | "profile" | "admin-profile" | "admin-campaigns" | "admin-stores" | "rewards" | "cupons" | "impacto"
 
 export function HomeView() {
   const [view, setView] = useState<View>("home")
@@ -63,8 +64,12 @@ export function HomeView() {
           onSwitchUser={() => setView("profile")}
           displayName={profileName}
           onNameChange={setProfileName}
+          onOpenCampaigns={() => setView("admin-campaigns")}
+          onOpenStores={() => setView("admin-stores")}
         />
       )}
+      {view === "admin-campaigns" && <AdminManagementScreen type="campaigns" onBack={() => setView("admin-profile")} />}
+      {view === "admin-stores" && <AdminManagementScreen type="stores" onBack={() => setView("admin-profile")} />}
       {view === "rewards" && <RewardsScreen onBack={() => setView("home")} />}
       {view === "cupons" && <CouponsScreen onBack={() => setView("home")} />}
       {view === "impacto" && <ImpactScreen onBack={() => setView("home")} />}
